@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for tech_dict project.
 
@@ -54,12 +55,17 @@ WSGI_APPLICATION = 'tech_dict.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+DB_MASTER = 'default'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    DB_MASTER: {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tect_dict',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '',                      # Set to empty string for default.
+    },
 }
 
 # Internationalization
@@ -67,7 +73,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -78,5 +84,5 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+STATIC_ROOT = './'
 STATIC_URL = '/static/'
