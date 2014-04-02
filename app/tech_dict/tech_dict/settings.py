@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
+    'paper_edu',
 )
 
 MIDDLEWARE_CLASSES = (

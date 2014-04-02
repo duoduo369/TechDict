@@ -33,7 +33,7 @@ def get_args(argvs):
     '''
         获取输入参数
         返回:
-            操作action => init auto
+            操作action => init auto, truncate
             有变更的app => [app1, app2, app3]
     '''
 
@@ -44,8 +44,8 @@ def get_args(argvs):
         print 'ERROR: action and apps is needed!'
         exit()
 
-    if action not in ('init', 'auto'):
-        print 'ERROR: action must in (init, auto)'
+    if action not in ('init', 'auto', 'truncate'):
+        print 'ERROR: action must in (init, auto, truncate)'
         exit()
 
     not_in = False
@@ -119,6 +119,15 @@ def auto_migrate(apps):
 
     print 'Auto OK\n'
 
+def truncate(apps):
+    print 'Truncate STAT ...\n'
+
+    delete_south_migrationhistory()
+    delete_migrations_dir(apps)
+
+    print 'Truncate OK\n'
+
+
 if __name__ == '__main__':
 
     action, apps = get_args(sys.argv)
@@ -126,5 +135,7 @@ if __name__ == '__main__':
         init_migrate(apps)
     elif action == 'auto':
         auto_migrate(apps)
+    elif action == 'truncate':
+        truncate(apps)
     else:
         print 'No action'
