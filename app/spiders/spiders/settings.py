@@ -21,7 +21,7 @@ for i in xrange(DJANGO_PATH_UP_LEVEL):
 
 DJANGO_PROJECT_PATH = os.path.join(_p, DJANGO_PROJECT_NAME)
 sys.path.insert(0, DJANGO_PROJECT_PATH)
-
+os.environ['DJANGO_SETTINGS_MODULE'] = DJANGO_PROJECT_NAME + '.settings'
 BOT_NAME = 'spiders'
 
 SPIDER_MODULES = ['spiders.spiders']
