@@ -30,6 +30,7 @@ class PaperEduRaw(models.Model):
             url -- 抓取页面链接
             created_at 记录创建日期
             updated_at 记录更新日期
+            raw_html
     '''
     title_cn = models.CharField(
         verbose_name=u'标题_中',
@@ -139,6 +140,11 @@ class PaperEduRaw(models.Model):
     url = models.URLField(
         verbose_name=u'抓取页面链接',
         unique=True,
+    )
+    raw_html = models.TextField(
+        verbose_name=u'源代码',
+        blank=True,
+        null=True,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
