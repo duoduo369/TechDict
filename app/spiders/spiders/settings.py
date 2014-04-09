@@ -22,6 +22,8 @@ for i in xrange(DJANGO_PATH_UP_LEVEL):
 DJANGO_PROJECT_PATH = os.path.join(_p, DJANGO_PROJECT_NAME)
 sys.path.insert(0, DJANGO_PROJECT_PATH)
 os.environ['DJANGO_SETTINGS_MODULE'] = DJANGO_PROJECT_NAME + '.settings'
+
+
 BOT_NAME = 'spiders'
 
 SPIDER_MODULES = ['spiders.spiders']
@@ -29,3 +31,12 @@ NEWSPIDER_MODULE = 'spiders.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'spiders (+http://www.yourdomain.com)'
+
+DOWNLOADER_MIDDLEWARES = {
+    'spiders.misc.middleware.CustomHttpProxyMiddleware': 400,
+    'spiders.misc.middleware.CustomUserAgentMiddleware': 401,
+}
+
+LOG_LEVEL = 'INFO'
+
+COOKIES_ENABLED = False
