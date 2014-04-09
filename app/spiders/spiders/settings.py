@@ -38,5 +38,6 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 LOG_LEVEL = 'INFO'
+LOG_FILE = 'log/paper_edu.log'
 
 COOKIES_ENABLED = False
