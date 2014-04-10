@@ -15,6 +15,8 @@ class PaperEduSpider(CrawlSpider):
     _CSS = {
         'authors_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(2) > span::text',
+        'authors_en': '#right > div.grid_10.omega.alpha > div.w794 >\
+                div:nth-child(5) > span::text',
     }
     _XPATH = {}
     _JOIN = {
