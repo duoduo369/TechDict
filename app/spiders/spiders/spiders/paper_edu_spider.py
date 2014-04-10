@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor as sle
 from scrapy.contrib.loader import ItemLoader
 from scrapy.contrib.spiders import CrawlSpider, Rule
@@ -12,19 +14,20 @@ URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
     allowed_domains = ['paper.edu.cn',]
+    PUB_DATE_FORMAT = "%Y-%m-%d"
     _CSS = {
         'authors_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(2) > span::text',
         'locations_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(3) > span::text',
         'title_cn': '#right > div.grid_10.omega.alpha > div.r_two >\
-                div > h1 > p::text',
+                div.cmtdiv .title_02::text',
         'authors_en': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(5) > span::text',
         'locations_en': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(6) > span::text',
         'title_en': '#right > div.grid_10.omega.alpha > div.r_two >\
-                div > h2 > p::text',
+                div.cmtdiv .title_03::text',
     }
     _XPATH = {
         'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
@@ -104,6 +107,7 @@ class PaperEduSpider(CrawlSpider):
         if django_istance:
             # 重抓此数据
             django_istance.delete()
+        sel = Selector(response)
         loader = ItemLoader(item=PaperEduItem(), response=response)
         # parse page
         loader.add_value('url', response.url)
@@ -113,7 +117,20 @@ class PaperEduSpider(CrawlSpider):
         for attr, xpath in self._XPATH.iteritems():
             loader.add_xpath(attr, xpath)
 
+        pub_css = '#right > div.grid_10.omega.alpha > div.r_two > div.cmtdiv .tip'
+        tip = sel.css(pub_css)
+        pub_date = tip.re(u'发布时间：\s*(\d+-\d+-\d+)')
+
         item = loader.load_item()
+        # 特殊字段处理
+        try:
+            pub_date = pub_date[0]
+            pub_date = datetime.strptime(pub_date, self.PUB_DATE_FORMAT).date()
+        except IndexError:
+            pub_date = None
+        except ValueError:
+            pub_date = None
+        item['pub_date'] = pub_date
 
         # transe attr
         for attr, value in item.iteritems():
