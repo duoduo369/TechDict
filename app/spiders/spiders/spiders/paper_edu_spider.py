@@ -6,13 +6,23 @@ from scrapy.selector import Selector
 
 import spiders.misc.log as log
 from spiders.items import PaperEduItem
-from paper_edu.models import PaperEduRaw
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
     allowed_domains = ['paper.edu.cn',]
+    _CSS = {
+        'authors_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
+                div:nth-child(2) > span::text',
+    }
+    _XPATH = {}
+    _JOIN = {
+        'url': '',
+        'raw_html': '',
+        'authors_cn': ',',
+        'authors_en': ',',
+    }
     rules = (
         Rule(
             sle(
@@ -31,11 +41,15 @@ class PaperEduSpider(CrawlSpider):
         ),
     )
 
-    def __init__(self, start_date=None, end_date=None, per_pages=20, page=1):
+    def __init__(self, start_date=None, end_date=None,
+                 per_pages=20, page=1, refetch=True):
         '''
             arguments:
-                start_date -- 2014-01-01
-                end_date -- 2014-01-02
+                start_date <= date <= end_date
+                start_date -- 2014-01-01 起始日期
+                end_date -- 2014-01-02 截止日期
+                per_pages -- 20 每页显示条数
+                refetch -- 是否重抓已存在的数据
         '''
         super(PaperEduSpider, self).__init__()
         url = (
@@ -47,6 +61,8 @@ class PaperEduSpider(CrawlSpider):
         'pagesize=%s&timeA=&userleft=&paperleft=&jiaocha=&1=1&page=%s',)[0]
         start_url = url % (start_date, end_date, per_pages, page)
         self.start_urls = [start_url]
+        self.refetch = refetch
+        self._Model = PaperEduItem.django_model
 
     def parse_start_url(self, response):
         '''
@@ -57,15 +73,21 @@ class PaperEduSpider(CrawlSpider):
 
     def parse_content(self, response):
         log.info(response.url)
-        paper_edu_raw = PaperEduRaw.objects.filter(url=response.url)
-        # 抓过的不在重抓
-        if paper_edu_raw:
+        django_istance = self._Model.objects.get(url=response.url)
+        # django obj之前存在,并且不重抓则忽略此条
+        if django_istance and not self.refetch:
             return
+        # 否则重抓此数据
+        if django_istance:
+            django_istance.delete()
         loader = ItemLoader(item=PaperEduItem(), response=response)
         loader.add_value('url', response.url)
         loader.add_value('raw_html', response.body)
+        for attr, css in self._CSS.iteritems():
+            loader.add_css(attr, css)
+
         item = loader.load_item()
         for attr, value in item.iteritems():
             if isinstance(value, list):
-                item[attr] = ''.join(value)
+                item[attr] = self._JOIN.get(attr, '').join(value)
         return item
