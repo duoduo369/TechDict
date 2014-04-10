@@ -17,6 +17,7 @@ import subprocess
 
 from os.path import realpath, dirname
 from os.path import join as path_join
+import shutil
 sys.path.insert(
     0,
     realpath(path_join(dirname(__file__), '../'))
@@ -76,6 +77,8 @@ def delete_migrations_dir(apps):
     for app in apps:
         migrations = '%s/migrations' % app
         if os.path.exists(migrations):
+            if os.path.exists('/tmp/migrations'):
+                shutil.rmtree('/tmp/migrations')
             commond = 'mv %s/ /tmp/' % migrations
             print commond
             subprocess.check_output(commond.split(' '))

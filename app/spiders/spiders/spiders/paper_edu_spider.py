@@ -15,15 +15,37 @@ class PaperEduSpider(CrawlSpider):
     _CSS = {
         'authors_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(2) > span::text',
+        'locations_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
+                div:nth-child(3) > span::text',
+        'title_cn': '#right > div.grid_10.omega.alpha > div.r_two >\
+                div > h1 > p::text',
         'authors_en': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(5) > span::text',
+        'locations_en': '#right > div.grid_10.omega.alpha > div.w794 >\
+                div:nth-child(6) > span::text',
+        'title_en': '#right > div.grid_10.omega.alpha > div.r_two >\
+                div > h2 > p::text',
     }
-    _XPATH = {}
+    _XPATH = {
+        'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[1]',
+        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
+        'abstract_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[1]',
+        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[2]',
+    }
     _JOIN = {
         'url': '',
         'raw_html': '',
         'authors_cn': ',',
         'authors_en': ',',
+        'keywords_cn': ',',
+        'keywords_en': ',',
+        'abstract_cn': '',
+        'abstract_en': '',
+        'locations_cn': '',
+        'locations_en': '',
+        'title_en': '',
+        'title_cn': '',
+        'title_en': '',
     }
     rules = (
         Rule(
@@ -75,20 +97,25 @@ class PaperEduSpider(CrawlSpider):
 
     def parse_content(self, response):
         log.info(response.url)
-        django_istance = self._Model.objects.get(url=response.url)
+        django_istance = self._Model.objects.filter(url=response.url)
         # django obj之前存在,并且不重抓则忽略此条
         if django_istance and not self.refetch:
             return
-        # 否则重抓此数据
         if django_istance:
+            # 重抓此数据
             django_istance.delete()
         loader = ItemLoader(item=PaperEduItem(), response=response)
+        # parse page
         loader.add_value('url', response.url)
         loader.add_value('raw_html', response.body)
         for attr, css in self._CSS.iteritems():
             loader.add_css(attr, css)
+        #for attr, xpath in self._XPATH.iteritems():
+            #loader.add_xpath(attr, xpath)
 
         item = loader.load_item()
+
+        # transe attr
         for attr, value in item.iteritems():
             if isinstance(value, list):
                 item[attr] = self._JOIN.get(attr, '').join(value)

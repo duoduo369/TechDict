@@ -53,13 +53,13 @@ class PaperEduRaw(models.Model):
     )
     authors_en = models.CharField(
         verbose_name=u'作者_英',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
     locations_cn = models.CharField(
         verbose_name=u'单位_中',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
