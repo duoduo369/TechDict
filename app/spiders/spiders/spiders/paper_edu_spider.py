@@ -27,10 +27,10 @@ class PaperEduSpider(CrawlSpider):
                 div > h2 > p::text',
     }
     _XPATH = {
-        'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[1]',
-        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
-        'abstract_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[1]',
-        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[2]',
+        'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
+        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[3]',
+        'abstract_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[2]',
+        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[3]',
     }
     _JOIN = {
         'url': '',
@@ -110,8 +110,8 @@ class PaperEduSpider(CrawlSpider):
         loader.add_value('raw_html', response.body)
         for attr, css in self._CSS.iteritems():
             loader.add_css(attr, css)
-        #for attr, xpath in self._XPATH.iteritems():
-            #loader.add_xpath(attr, xpath)
+        for attr, xpath in self._XPATH.iteritems():
+            loader.add_xpath(attr, xpath)
 
         item = loader.load_item()
 
