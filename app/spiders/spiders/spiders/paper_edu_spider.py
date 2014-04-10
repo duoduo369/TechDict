@@ -28,27 +28,28 @@ class PaperEduSpider(CrawlSpider):
                 div:nth-child(6) > span::text',
         'title_en': '#right > div.grid_10.omega.alpha > div.r_two >\
                 div.cmtdiv .title_03::text',
+        'impressions': '#paper_visitnum::text',
+        'collections': '#paper_collectnum::text',
+        'comments': '#paper_comment::text',
+        'pdf_download': '#right > div.grid_10.omega.alpha > div.w794 >\
+                div:nth-child(8) > a::attr(href)'
     }
     _XPATH = {
         'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
         'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[3]',
         'abstract_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[2]',
         'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[3]',
+        'author_intro': '//*[@id="right"]/div[2]/div[2]/div[9]/div/text()[2]',
+        'contact': '//*[@id="right"]/div[2]/div[2]/div[9]/div/text()[3]',
+        'paper_edu_pub_record': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[2]',
+        'pub_periodical': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[4]',
     }
     _JOIN = {
-        'url': '',
-        'raw_html': '',
         'authors_cn': ',',
         'authors_en': ',',
         'keywords_cn': ',',
         'keywords_en': ',',
-        'abstract_cn': '',
-        'abstract_en': '',
-        'locations_cn': '',
-        'locations_en': '',
-        'title_en': '',
-        'title_cn': '',
-        'title_en': '',
+        'pdf_download': ',',
     }
     rules = (
         Rule(
@@ -69,7 +70,7 @@ class PaperEduSpider(CrawlSpider):
     )
 
     def __init__(self, start_date=None, end_date=None,
-                 per_pages=20, page=1, refetch=True):
+                 per_pages=20, page=1, refetch=False):
         '''
             arguments:
                 start_date <= date <= end_date
