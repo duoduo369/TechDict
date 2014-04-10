@@ -6,6 +6,7 @@ from scrapy.selector import Selector
 
 import spiders.misc.log as log
 from spiders.items import PaperEduItem
+from paper_edu.models import PaperEduRaw
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 
@@ -56,3 +57,15 @@ class PaperEduSpider(CrawlSpider):
 
     def parse_content(self, response):
         log.info(response.url)
+        paper_edu_raw = PaperEduRaw.objects.filter(url=response.url)
+        # 抓过的不在重抓
+        if paper_edu_raw:
+            return
+        loader = ItemLoader(item=PaperEduItem(), response=response)
+        loader.add_value('url', response.url)
+        loader.add_value('raw_html', response.body)
+        item = loader.load_item()
+        for attr, value in item.iteritems():
+            if isinstance(value, list):
+                item[attr] = ''.join(value)
+        return item

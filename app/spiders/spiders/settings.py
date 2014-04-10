@@ -37,7 +37,12 @@ DOWNLOADER_MIDDLEWARES = {
     'spiders.misc.middleware.CustomUserAgentMiddleware': 401,
 }
 
-LOG_LEVEL = 'INFO'
+ITEM_PIPELINES = {
+    'spiders.pipelines.DjangoPipeline': 300,
+}
+
+#LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
 LOG_FILE = 'log/paper_edu.log'
 
 COOKIES_ENABLED = False
