@@ -2,3 +2,7 @@ MAX_LENGTH_20 = 20
 MAX_LENGTH_100 = 100
 MAX_LENGTH_200 = 200
 MAX_LENGTH_1024 = 1024
+
+PAPEREDUKEYWORDCN_RELATED_PAPEREDURAW = 'paperedukeywordcn_related_papereduraw '
+PAPEREDUKEYWORDEN_RELATED_PAPEREDURAW = 'paperedukeyworden_related_papereduraw '
+PAPEREDUKEYWORDEN_RELATED_PAPEREDUKEYWORDCN = 'paperedukeyworden_related_paperedukeywordcn '

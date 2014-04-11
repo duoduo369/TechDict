@@ -3,6 +3,7 @@ from django.db import models
 import model_settings as config
 
 MAX_LENGTH_20 = config.MAX_LENGTH_20
+MAX_LENGTH_100 = config.MAX_LENGTH_100
 MAX_LENGTH_200 = config.MAX_LENGTH_200
 MAX_LENGTH_1024 = config.MAX_LENGTH_1024
 
@@ -148,3 +149,34 @@ class PaperEduRaw(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class PaperEduKeyWordCN(models.Model):
+    '''中文关键字'''
+    word = models.CharField(
+        verbose_name=u'中文关键词',
+        max_length=MAX_LENGTH_100,
+        unique=True,
+    )
+    raw_data = models.ManyToManyField(
+        'paper_edu.PaperEduRaw',
+        related_name=config.PAPEREDUKEYWORDCN_RELATED_PAPEREDURAW,
+        verbose_name=u'原始抓取数据',
+    )
+
+class PaperEduKeyWordEN(models.Model):
+    '''英文关键字'''
+    word = models.CharField(
+        verbose_name=u'英文关键词',
+        max_length=MAX_LENGTH_100,
+        unique=True,
+    )
+    raw_data = models.ManyToManyField(
+        'paper_edu.PaperEduRaw',
+        related_name=config.PAPEREDUKEYWORDEN_RELATED_PAPEREDURAW,
+        verbose_name=u'原始抓取数据',
+    )
+    cn_word = models.ManyToManyField(
+        'paper_edu.PaperEduKeyWordCN',
+        related_name=config.PAPEREDUKEYWORDEN_RELATED_PAPEREDUKEYWORDCN,
+        verbose_name=u'中文关键字',
+    )
