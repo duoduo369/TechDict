@@ -159,9 +159,10 @@ class PaperEduKeyWordCN(models.Model):
     )
     raw_data = models.ManyToManyField(
         'paper_edu.PaperEduRaw',
-        related_name=config.PAPEREDUKEYWORDCN_RELATED_PAPEREDURAW,
         verbose_name=u'原始抓取数据',
     )
+    def __unicode__(self):
+        return self.word
 
 class PaperEduKeyWordEN(models.Model):
     '''英文关键字'''
@@ -172,11 +173,11 @@ class PaperEduKeyWordEN(models.Model):
     )
     raw_data = models.ManyToManyField(
         'paper_edu.PaperEduRaw',
-        related_name=config.PAPEREDUKEYWORDEN_RELATED_PAPEREDURAW,
         verbose_name=u'原始抓取数据',
     )
     cn_word = models.ManyToManyField(
         'paper_edu.PaperEduKeyWordCN',
-        related_name=config.PAPEREDUKEYWORDEN_RELATED_PAPEREDUKEYWORDCN,
         verbose_name=u'中文关键字',
     )
+    def __unicode__(self):
+        return self.word
