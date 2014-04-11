@@ -5,11 +5,13 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor as sle
 from scrapy.contrib.loader import ItemLoader
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.selector import Selector
+import re
 
 import spiders.misc.log as log
 from spiders.items import PaperEduItem
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
+SEMICOLON_PATTERN = re.compile(u'[;；]')
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
@@ -43,6 +45,15 @@ class PaperEduSpider(CrawlSpider):
         'contact': '//*[@id="right"]/div[2]/div[2]/div[9]/div/text()[3]',
         'paper_edu_pub_record': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[2]',
         'pub_periodical': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[4]',
+    }
+    _REPLACE = {
+        'keywords_cn': (SEMICOLON_PATTERN, u';'),
+        'keywords_en': (re.compile(u'[;；,，]'), u';'),
+        'locations_cn': (SEMICOLON_PATTERN, u';'),
+        'locations_en': (SEMICOLON_PATTERN, u';'),
+    }
+    _SPLIT_AND_JOIN = {
+        'keywords_cn': (re.compile(u'\s+'), u';', lambda s: u';' not in s),
     }
     _JOIN = {
         'authors_cn': ',',
@@ -124,6 +135,7 @@ class PaperEduSpider(CrawlSpider):
 
         item = loader.load_item()
         # 特殊字段处理
+
         try:
             pub_date = pub_date[0]
             pub_date = datetime.strptime(pub_date, self.PUB_DATE_FORMAT).date()
@@ -137,4 +149,16 @@ class PaperEduSpider(CrawlSpider):
         for attr, value in item.iteritems():
             if isinstance(value, list):
                 item[attr] = self._JOIN.get(attr, '').join(value)
+
+        # 字段替换,例如替换关键字中文逗号等
+        for attr,_r in self._REPLACE.iteritems():
+            old, new = _r
+            item[attr] = re.sub(old, new, item[attr])
+
+        # 不规则页面元素替换，关键词中有使用空格切分和;切分的
+        for attr, _r in self._SPLIT_AND_JOIN.iteritems():
+            pattern, join_str, judge_func = _r
+            if judge_func(item[attr]):
+                item[attr] = join_str.join(re.split(pattern, item[attr]))
+
         return item
