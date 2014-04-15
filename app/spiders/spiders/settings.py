@@ -35,14 +35,15 @@ NEWSPIDER_MODULE = 'spiders.spiders'
 DOWNLOADER_MIDDLEWARES = {
     'spiders.misc.middleware.CustomHttpProxyMiddleware': 400,
     'spiders.misc.middleware.CustomUserAgentMiddleware': 401,
+    'spiders.misc.middleware.CustomNextPageMiddleware': 402,
 }
 
 ITEM_PIPELINES = {
     'spiders.pipelines.DjangoPipeline': 300,
 }
 
-#LOG_LEVEL = 'INFO'
-LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = 'INFO'
+#LOG_LEVEL = 'DEBUG'
 LOG_FILE = 'log/paper_edu.log'
 
 COOKIES_ENABLED = False

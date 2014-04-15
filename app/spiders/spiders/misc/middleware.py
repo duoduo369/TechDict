@@ -1,9 +1,14 @@
-from scrapy import log
-from proxy import PROXIES
-from agents import AGENTS
-
 import random
+import re
 
+from . import log
+from scrapy.http import Request
+from twisted.internet.error import TCPTimedOutError
+
+from agents import AGENTS
+from proxy import PROXIES
+
+PAGE_PATTERN = re.compile(u'page=(\d+)')
 
 class CustomHttpProxyMiddleware(object):
 
@@ -14,7 +19,7 @@ class CustomHttpProxyMiddleware(object):
             try:
                 request.meta['proxy'] = "http://%s" % p['ip_port']
             except Exception, e:
-                log.msg("Exception %s" % e, _level=log.CRITICAL)
+                log.critical("Exception {msg}".format(msg=e))
 
     def use_proxy(self, request):
         """
@@ -31,3 +36,20 @@ class CustomUserAgentMiddleware(object):
     def process_request(self, request, spider):
         agent = random.choice(AGENTS)
         request.headers['User-Agent'] = agent
+
+
+class CustomNextPageMiddleware(object):
+
+    def process_exception(self, request, exception, spider):
+        if isinstance(exception, TCPTimedOutError):
+            log.info('PaperEduSpider timeout: {url}'.format(url=request.url))
+            url = request.url
+            if 'advanced_search' in url:
+                s = PAGE_PATTERN.search(url)
+                if s and s.groups():
+                    next_page = int(s.groups()[0]) + 1
+                    next_url = re.sub(
+                        PAGE_PATTERN,'page={page}'.format(page=next_page),
+                        url,
+                    )
+                    return Request(next_url)

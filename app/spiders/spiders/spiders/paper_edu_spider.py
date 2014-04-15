@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import datetime
 
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor as sle
 from scrapy.contrib.loader import ItemLoader
 from scrapy.contrib.spiders import CrawlSpider, Rule
+from scrapy.http import Request
 from scrapy.selector import Selector
-import re
 
 import spiders.misc.log as log
 from spiders.items import PaperEduItem
@@ -81,24 +82,28 @@ class PaperEduSpider(CrawlSpider):
     )
 
     def __init__(self, start_date=None, end_date=None,
-                 per_pages=20, page=1, refetch=False):
+                 per_pages=10, page=1, refetch=False):
         '''
             arguments:
                 start_date <= date <= end_date
                 start_date -- 2014-01-01 起始日期
                 end_date -- 2014-01-02 截止日期
-                per_pages -- 20 每页显示条数
+                per_pages -- 10 每页显示条数,不要设置太大减少超时时间
                 refetch -- 是否重抓已存在的数据
         '''
         super(PaperEduSpider, self).__init__()
         url = (
-         URL_PREFIX +
-        '?type=0&subject=&title=&author=&abstract=&keywords=&'
-        'begin=%s&end=%s&y1=2014&m1=04&d1=02&y2=2014&m2=04&d2=09&'
-        'star=&method=RELEVANCE&filename=&company=&language=0&'
-        'p1=0&p2=0&p3=0&p4=0&p5=0&p6=0&r1=and&r2=and&r3=and&r4=and&r5=and&'
-        'pagesize=%s&timeA=&userleft=&paperleft=&jiaocha=&1=1&page=%s',)[0]
-        start_url = url % (start_date, end_date, per_pages, page)
+          URL_PREFIX +
+          '?type=0&begin={begin}&end={end}&method=RELEVANCE&'
+          'language=0&p1=0&p2=0&p3=0&p4=0&p5=0&p6=0&r1=and&r2=and&'
+          'r3=and&r4=and&r5=and&pagesize={pagesize}&page={page}',
+        )[0]
+        start_url = url.format(
+            begin=start_date,
+            end=end_date,
+            pagesize=per_pages,
+            page=page,
+        )
         self.start_urls = [start_url]
         self.refetch = refetch
         self._Model = PaperEduItem.django_model
@@ -109,6 +114,7 @@ class PaperEduSpider(CrawlSpider):
         '''
         log.info('start url parse_content')
         log.info(response.url)
+        # self.parse_content(response)
 
     def parse_content(self, response):
         log.info(response.url)
@@ -123,7 +129,12 @@ class PaperEduSpider(CrawlSpider):
         loader = ItemLoader(item=PaperEduItem(), response=response)
         # parse page
         loader.add_value('url', response.url)
-        loader.add_value('raw_html', response.body)
+        raw_html = None
+        try:
+            raw_html = response.body.decode('utf-8')
+        except:
+            raw_html = response.body.decode('latin-1')
+        loader.add_value('raw_html', raw_html)
         for attr, css in self._CSS.iteritems():
             loader.add_css(attr, css)
         for attr, xpath in self._XPATH.iteritems():
@@ -162,3 +173,19 @@ class PaperEduSpider(CrawlSpider):
                 item[attr] = join_str.join(re.split(pattern, item[attr]))
 
         return item
+
+
+class PaperEduSpiderOnePage(PaperEduSpider):
+
+    name = 'paper_edu_spider_one_page'
+    rules = (
+        Rule(
+            sle(
+                allow=('/index.php/default/releasepaper/content/\d+',),
+            ),
+            callback='parse_content',
+        ),
+    )
+
+    def __init__(self, refetch=False):
+        CrawlSpider.__init__(self)
