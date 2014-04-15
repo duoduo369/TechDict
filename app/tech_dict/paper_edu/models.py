@@ -128,7 +128,7 @@ class PaperEduRaw(models.Model):
     )
     paper_edu_pub_record = models.CharField(
         verbose_name=u'中国科技在线收录情况',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
