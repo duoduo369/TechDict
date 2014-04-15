@@ -12,6 +12,8 @@ def info(msg):
 def debug(msg):
     log.msg(str(msg), level=log.DEBUG)
 
+def error(msg):
+    log.msg(str(msg), level=log.ERROR)
 
 def critical(msg):
     log.msg(str(msg), level=log.CRITICAL)

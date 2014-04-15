@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import random
 import re
 
@@ -41,9 +42,10 @@ class CustomUserAgentMiddleware(object):
 class CustomNextPageMiddleware(object):
 
     def process_exception(self, request, exception, spider):
+        '''处理下一页异常断抓的问题'''
+        url = request.url
+        log.error("Exception {msg}\nurl: {url}".format(msg=exception, url=url))
         if isinstance(exception, TCPTimedOutError):
-            log.info('PaperEduSpider timeout: {url}'.format(url=request.url))
-            url = request.url
             if 'advanced_search' in url:
                 s = PAGE_PATTERN.search(url)
                 if s and s.groups():
