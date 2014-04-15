@@ -42,7 +42,7 @@ class PaperEduRaw(models.Model):
 
     title_en = models.CharField(
         verbose_name=u'标题_英',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -88,7 +88,7 @@ class PaperEduRaw(models.Model):
     )
     keywords_en = models.CharField(
         verbose_name=u'关键字_英',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -116,7 +116,7 @@ class PaperEduRaw(models.Model):
     )
     author_intro = models.CharField(
         verbose_name=u'作者简介',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -134,7 +134,7 @@ class PaperEduRaw(models.Model):
     )
     pub_periodical = models.CharField(
         verbose_name=u'发表期刊',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
