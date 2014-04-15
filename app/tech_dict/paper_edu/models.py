@@ -122,7 +122,7 @@ class PaperEduRaw(models.Model):
     )
     contact = models.CharField(
         verbose_name=u'通信联系人',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
