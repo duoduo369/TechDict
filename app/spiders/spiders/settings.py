@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
-# Scrapy settings for spiders project
-#
-# For simplicity, this file contains only the most important settings by
-# default. All the other settings are documented here:
-#
-#     http://doc.scrapy.org/en/latest/topics/settings.html
-#
-
 import os
 import sys
+
 # 本配置文件地址
 SCRAPY_SETTINGS_PATH = os.path.realpath(__file__)
+
 # django根目录地址，默认是settings上面3级
 DJANGO_PATH_UP_LEVEL = 3
 DJANGO_PROJECT_NAME = 'tech_dict'
+
 # django 配置文件地址
 _p = SCRAPY_SETTINGS_PATH
 for i in xrange(DJANGO_PATH_UP_LEVEL):
@@ -29,9 +24,6 @@ BOT_NAME = 'spiders'
 SPIDER_MODULES = ['spiders.spiders']
 NEWSPIDER_MODULE = 'spiders.spiders'
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'spiders (+http://www.yourdomain.com)'
-
 DOWNLOADER_MIDDLEWARES = {
     'spiders.misc.middleware.CustomHttpProxyMiddleware': 400,
     'spiders.misc.middleware.CustomUserAgentMiddleware': 401,
@@ -42,8 +34,11 @@ ITEM_PIPELINES = {
     'spiders.pipelines.DjangoPipeline': 300,
 }
 
+# 下载延迟
+DOWNLOAD_DELAY = 0.15
+
 LOG_LEVEL = 'INFO'
-#LOG_LEVEL = 'DEBUG'
 LOG_FILE = 'log/paper_edu.log'
 
+# 禁用cookie
 COOKIES_ENABLED = False

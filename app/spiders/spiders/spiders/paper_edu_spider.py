@@ -9,6 +9,7 @@ from scrapy.http import Request
 from scrapy.selector import Selector
 
 import spiders.misc.log as log
+from spiders.misc.utils import str_to_date, date_to_str, range_date
 from spiders.items import PaperEduItem
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
@@ -18,6 +19,8 @@ class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
     allowed_domains = ['paper.edu.cn',]
     PUB_DATE_FORMAT = "%Y-%m-%d"
+    # type: (0,全部), (1, 首发)
+    _TYPE = 1
     _CSS = {
         'authors_cn': '#right > div.grid_10.omega.alpha > div.w794 >\
                 div:nth-child(2) > span::text',
@@ -72,7 +75,7 @@ class PaperEduSpider(CrawlSpider):
         ),
         Rule(
             sle(
-                allow=("\?type=0.*page=\d+.*",),
+                allow=("\?type=\d+.*page=\d+.*",),
                 restrict_xpaths=(
                     u'//a[re:match(text(), "下一页")]',
                 ),
@@ -94,17 +97,18 @@ class PaperEduSpider(CrawlSpider):
         super(PaperEduSpider, self).__init__()
         url = (
           URL_PREFIX +
-          '?type=0&begin={begin}&end={end}&method=RELEVANCE&'
+          '?type={_type}&begin={begin}&end={end}&method=RELEVANCE&'
           'language=0&p1=0&p2=0&p3=0&p4=0&p5=0&p6=0&r1=and&r2=and&'
           'r3=and&r4=and&r5=and&pagesize={pagesize}&page={page}',
         )[0]
-        start_url = url.format(
-            begin=start_date,
-            end=end_date,
-            pagesize=per_pages,
-            page=page,
-        )
-        self.start_urls = [start_url]
+        s_date, e_date = str_to_date(start_date), str_to_date(end_date)
+        self.start_urls =[]
+        for d in range_date(s_date, e_date):
+            one_date = date_to_str(d)
+            self.start_urls.append(url.format(
+                _type=self._TYPE, begin=one_date, end=one_date,
+                pagesize=per_pages, page=page,
+            ))
         self.refetch = refetch
         self._Model = PaperEduItem.django_model
 
@@ -112,12 +116,9 @@ class PaperEduSpider(CrawlSpider):
         '''
             处理start url第一页
         '''
-        log.info('start url parse_content')
-        log.info(response.url)
-        # self.parse_content(response)
+        log.info('start url: {url}'.format(url=response.url))
 
     def parse_content(self, response):
-        log.info(response.url)
         django_istance = self._Model.objects.filter(url=response.url)
         # django obj之前存在,并且不重抓则忽略此条
         if django_istance and not self.refetch:
@@ -131,7 +132,7 @@ class PaperEduSpider(CrawlSpider):
         loader.add_value('url', response.url)
         raw_html = None
         try:
-            raw_html = response.body.decode('utf-8')
+            raw_html = response.body_as_unicode()
         except:
             raw_html = response.body.decode('latin-1')
         loader.add_value('raw_html', raw_html)
@@ -187,5 +188,9 @@ class PaperEduSpiderOnePage(PaperEduSpider):
         ),
     )
 
-    def __init__(self, refetch=False):
+    def __init__(self, url, refetch=False):
         CrawlSpider.__init__(self)
+        self.start_urls = [url]
+
+    def parse_start_url(self, response):
+        self.parse_content(response)
