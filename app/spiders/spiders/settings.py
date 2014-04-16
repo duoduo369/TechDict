@@ -5,6 +5,9 @@ import sys
 # 本配置文件地址
 SCRAPY_SETTINGS_PATH = os.path.realpath(__file__)
 
+# 找到相对路径加入sys.path中
+# 本项目django路径 '.../TechDict/app/tech_dict'
+# scrapy setting文件路径 '.../TechDict/app/spiders/spiders/settings.py'
 # django根目录地址，默认是settings上面3级
 DJANGO_PATH_UP_LEVEL = 3
 DJANGO_PROJECT_NAME = 'tech_dict'
