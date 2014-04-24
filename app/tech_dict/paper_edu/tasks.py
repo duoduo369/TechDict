@@ -1,20 +1,46 @@
 # -*- coding: utf-8 -*-
-from paper_edu.models import PaperEduRaw, PaperEduKeyWordCN, PaperEduKeyWordEN
-from utils.dateutil import parse_dates
-from utils.text import split, PATTERN_EN_SEMICOLON
 from logging import getLogger
+
+from celery.task import task
+
+from paper_edu.models import PaperEduKeyWordCN, PaperEduKeyWordEN, PaperEduRaw
+from utils.dateutil import parse_dates, today, yesterday
+from utils.text import PATTERN_EN_SEMICOLON, split
 
 logger = getLogger('paper_edu')
 
-def classification(start_date=None, end_date=None, stat_all=False):
+@task
+def classification(start_date=None, end_date=None, stat_yesterday=False, stat_all=False):
+    '''
+        默认分析今天数据
+        start_yesterday -- 分析昨天数据
+        stat_all -- 分析全部数据
+        start_date -- 分析start_date数据
+        start_date ~ end_date 分析 start_date <= date <= end_date的数据
+        优先级: 今天 < start_yesterday < start_date[, end_date] < stat_all
+        默认今天
+    '''
     raw_data = None
+    # 默认分析今天数据
+    # 获得起止日期
+    count_date_start = today()
+    count_date_end = count_date_start
+    if stat_yesterday:
+        count_date_start = yesterday()
+        count_date_end = count_date_start
+    if start_date:
+        if end_date:
+            count_date_start, count_date_end = parse_dates((start_date, end_date))
+        else:
+            count_date_start, count_date_end = parse_dates((start_date,
+                start_date))
+    # 获得原始数据
     if stat_all:
         raw_data = PaperEduRaw.objects.filter()
     else:
-        start_date, end_date = parse_dates((start_date, end_date))
         raw_data = PaperEduRaw.objects.filter(
-            pub_date__gte=start_date,
-            pub_date__lt=end_date,
+            pub_date__gte=count_date_start,
+            pub_date__lte=count_date_end,
         )
     for raw in raw_data:
         keywords_cns = split(raw.keywords_cn, PATTERN_EN_SEMICOLON)

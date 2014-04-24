@@ -119,3 +119,69 @@ LOGGING = {
         'paper_edu': {'handlers': ['paper_edu'], 'level': 'DEBUG', 'propagate': True},
     }
 }
+
+# ----------------------------  celery ------------
+import djcelery
+djcelery.setup_loader()
+
+# broker 用的rabbitmq
+#BROKER_URL = 'amqp://social_master:admaster@127.0.0.1:5672/social_crm'
+BROKER_URL = 'amqp://duoduo:duoduo@127.0.0.1:5672/duoduo_host'
+
+# 这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+CELERYD_CONCURRENCY = 2  # celery worker的并发数 也是命令行-c指定的数目
+CELERYD_PREFETCH_MULTIPLIER = 1  # celery worker 每次去rabbitmq取任务的数量
+CELERYD_MAX_TASKS_PER_CHILD = 100 # 每个worker执行了多少任务就会死掉
+
+CELERY_RESULT_BACKEND = "amqp" # 官网优化的地方也推荐使用c的librabbitmq
+CELERY_RESULT_SERIALIZER = 'json' # 默认是pickle
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_DEFAULT_QUEUE = 'default' # 默认队列名称
+CELERY_DEFAULT_EXCHANGE = 'default'  # 默认交换
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'  # 默认交换类型
+CELERY_DEFAULT_ROUTING_KEY = 'default'  # 默认路由key
+
+CELERY_IGNORE_RESULT = True
+CELERY_STORE_ERRORS_EVEN_IF_IGNORED = False
+CELERY_AMQP_TASK_RESULT_EXPIRES = 18000
+
+CELERY_EXPIRES_TIME = 18000 # 过期时间 单位s
+
+CONN_MAX_AGE = 10
+
+CELERY_IMPORTS = ('paper_edu',)
+
+# 队列配置
+keys = list(CELERY_IMPORTS)
+keys.extend(['default', 'backend_cleanup'])
+CELERY_QUEUES = {}
+for key in keys:
+    CELERY_QUEUES[key] = {
+        'exchange': key,
+        'exchange_type': 'direct',
+        'routing_key': key,
+    }
+
+class MyRouter(object):
+
+    def route_for_task(self, task, args=None, kwargs=None):
+
+        _mapper = {
+            'paper_edu.tasks': {'queue': 'paper_edu'},
+            'celery.backend_cleanup': {'queue': 'backend_cleanup'},
+        }
+
+        queue = None
+        for key in _mapper:
+            if task.startswith(key):
+                queue = _mapper[key]
+                break
+
+        if not queue:
+            print 'DEFAULT_TASK_%s' % task
+
+        return queue
+
+CELERY_ROUTES = (MyRouter(), )
