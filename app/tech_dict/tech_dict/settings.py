@@ -15,16 +15,6 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 LOG_DIR = os.path.join(BASE_DIR, 'log')
 
-# scrapy settings
-from scrapy.utils.project import get_project_settings
-SCRAPY_PROJECT_NAME = 'spiders'
-# 找到相对路径加入sys.path中
-# '.../TechDict/app/spiders'
-SCRAPY_PROJECT_PATH = os.path.join(os.path.split(BASE_DIR)[0], SCRAPY_PROJECT_NAME)
-sys.path.insert(0, SCRAPY_PROJECT_PATH)
-os.environ.setdefault('SCRAPY_SETTINGS_MODULE', SCRAPY_PROJECT_NAME+'.settings')
-SCRAPY_SETTINGS = get_project_settings()
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -48,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
     'south',
     'paper_edu',
 )
