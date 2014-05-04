@@ -14,6 +14,7 @@ from spiders.items import PaperEduItem
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 SEMICOLON_PATTERN = re.compile(u'[;；]')
+REDIRECT_PATTERN = re.compile('(/html/releasepaper/((\d+)/)*)')
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
@@ -71,8 +72,15 @@ class PaperEduSpider(CrawlSpider):
             sle(
                 allow=('/index.php/default/releasepaper/content/\d+',),
             ),
+            callback='redirect_request',
+        ),
+        Rule(
+            sle(
+                allow=('/html/releasepaper/((\d+)/)*',),
+            ),
             callback='parse_content',
         ),
+
         Rule(
             sle(
                 allow=("\?type=\d+.*page=\d+.*",),
@@ -116,9 +124,20 @@ class PaperEduSpider(CrawlSpider):
         '''
             处理start url第一页
         '''
-        log.info('start url: {url}'.format(url=response.url))
+        url = response.url
+        log.info('start url: {url}'.format(url=url))
+        # 网站改版，旧网页变成重定向
+        if REDIRECT_PATTERN.search(url):
+            return self.parse_content(response)
+
+    def redirect_request(self, response):
+        '''网站改版，旧网页变成重定向'''
+        log.info('redirect_request')
+        yield Request('http://www.paper.edu.cn{url}'.format(
+            url=REDIRECT_PATTERN.search(response.body).group()))
 
     def parse_content(self, response):
+        log.info('parse_content')
         django_istance = self._Model.objects.filter(url=response.url)
         # django obj之前存在,并且不重抓则忽略此条
         if django_istance and not self.refetch:
@@ -172,6 +191,8 @@ class PaperEduSpider(CrawlSpider):
             pattern, join_str, judge_func = _r
             if judge_func(item[attr]):
                 item[attr] = join_str.join(re.split(pattern, item[attr]))
+
+        log.info(item.items())
 
         return item
 
