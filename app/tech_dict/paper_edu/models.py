@@ -33,6 +33,18 @@ class PaperEduRaw(models.Model):
             updated_at 记录更新日期
             raw_html
     '''
+    ATTRS = ['title_cn', 'title_en', 'authors_cn', 'authors_en',
+             'locations_cn', 'locations_en', 'abstract_cn',
+             'abstract_en', 'keywords_cn', 'keywords_en', 'pub_date',
+             'impressions', 'collections', 'comments', 'pdf_download',
+             'author_intro', 'contact', 'paper_edu_pub_record',
+             'pub_periodical', 'url', 'raw_html', 'created_at',
+             'updated_at'
+            ]
+
+    def iteritems(self):
+        return ((attr, getattr(self, attr)) for attr in self.ATTRS)
+
     title_cn = models.CharField(
         verbose_name=u'标题_中',
         max_length=MAX_LENGTH_200,
@@ -149,6 +161,9 @@ class PaperEduRaw(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return self.url
 
 class PaperEduKeyWordCN(models.Model):
     '''中文关键字'''
