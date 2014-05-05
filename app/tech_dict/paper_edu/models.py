@@ -47,7 +47,7 @@ class PaperEduRaw(models.Model):
 
     title_cn = models.CharField(
         verbose_name=u'标题_中',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -60,7 +60,7 @@ class PaperEduRaw(models.Model):
     )
     authors_cn = models.CharField(
         verbose_name=u'作者_中',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -78,7 +78,7 @@ class PaperEduRaw(models.Model):
     )
     locations_en = models.CharField(
         verbose_name=u'单位_英',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
@@ -94,7 +94,7 @@ class PaperEduRaw(models.Model):
     )
     keywords_cn = models.CharField(
         verbose_name=u'关键字_中',
-        max_length=MAX_LENGTH_200,
+        max_length=MAX_LENGTH_1024,
         blank=True,
         null=True,
     )
