@@ -131,15 +131,6 @@ class PaperEduSpider(CrawlSpider):
         '''
         url = response.url
         log.info('start url: {url}'.format(url=url))
-        # 网站改版，旧网页变成重定向
-        if REDIRECT_PATTERN.search(url):
-            return self.parse_content(response)
-
-    def redirect_request(self, response):
-        '''网站改版，旧网页变成重定向'''
-        log.info('redirect_request')
-        yield Request('http://www.paper.edu.cn{url}'.format(
-            url=REDIRECT_PATTERN.search(response.body).group()))
 
     def parse_content(self, response):
         log.info('parse_content')
@@ -203,6 +194,15 @@ class PaperEduSpider(CrawlSpider):
                 item[attr] = join_str.join(re.split(pattern, item[attr]))
 
         return item
+
+    def redirect_request(self, response):
+        '''网站改版，旧网页变成重定向'''
+        log.info('redirect_request')
+        yield Request(
+            url='http://www.paper.edu.cn{url}'.format(
+                url=REDIRECT_PATTERN.search(response.body).group()),
+            callback=self.parse_content,
+        )
 
 
 class PaperEduSpiderOnePage(PaperEduSpider):
