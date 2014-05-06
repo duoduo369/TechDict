@@ -15,6 +15,7 @@ from spiders.items import PaperEduItem
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 SEMICOLON_PATTERN = re.compile(u'[;；]')
 REDIRECT_PATTERN = re.compile('(/html/releasepaper/((\d+)/)*)')
+KEYWORDS_EN_RE_2 = '//*[@id="right"]/div[2]/div[2]/div[4]/text()[4]'
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
@@ -43,13 +44,17 @@ class PaperEduSpider(CrawlSpider):
     }
     _XPATH = {
         'abstract_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[2]',
-        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[3]',
+        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[4]',
         'abstract_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[2]',
-        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[3]',
+        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[4]',
         'author_intro': '//*[@id="right"]/div[2]/div[2]/div[9]/div/text()[2]',
         'contact': '//*[@id="right"]/div[2]/div[2]/div[9]/div/text()[3]',
         'paper_edu_pub_record': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[2]',
         'pub_periodical': '//*[@id="right"]/div[2]/div[2]/div[10]/div/text()[4]',
+    }
+    _XPATH_CORRECTION = {
+        'keywords_cn': '//*[@id="right"]/div[2]/div[2]/div[4]/text()[3]',
+        'keywords_en': '//*[@id="right"]/div[2]/div[2]/div[7]/text()[3]',
     }
     _REPLACE = {
         'keywords_cn': (SEMICOLON_PATTERN, u';'),
@@ -167,6 +172,11 @@ class PaperEduSpider(CrawlSpider):
         item = loader.load_item()
         # 特殊字段处理
 
+        # keywords页面不规范
+        for attr, xpath_correction in self._XPATH_CORRECTION.iteritems():
+            if not ''.join(item[attr]).strip(' ;\n'):
+                item[attr] = sel.xpath(xpath_correction).extract()[0]
+
         try:
             pub_date = pub_date[0]
             pub_date = datetime.strptime(pub_date, self.PUB_DATE_FORMAT).date()
@@ -191,8 +201,6 @@ class PaperEduSpider(CrawlSpider):
             pattern, join_str, judge_func = _r
             if judge_func(item[attr]):
                 item[attr] = join_str.join(re.split(pattern, item[attr]))
-
-        log.info(item.items())
 
         return item
 
