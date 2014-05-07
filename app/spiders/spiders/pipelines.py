@@ -5,7 +5,6 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy.contrib.djangoitem import DjangoItem
-from paper_edu.models import PaperEduRaw
 import misc.log as log
 
 class DjangoPipeline(object):

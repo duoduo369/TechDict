@@ -3,11 +3,11 @@ from logging import getLogger
 
 from celery.task import task
 
-from paper_edu.models import PaperEduKeyWordCN, PaperEduKeyWordEN, PaperEduRaw
+from sites.models import KeyWordCN, KeyWordEN, SiteRawData
 from utils.dateutil import parse_dates, today, yesterday
 from utils.text import PATTERN_EN_SEMICOLON, split
 
-logger = getLogger('paper_edu')
+logger = getLogger('sites')
 
 @task
 def classification(start_date=None, end_date=None, stat_yesterday=False, stat_all=False):
@@ -36,9 +36,9 @@ def classification(start_date=None, end_date=None, stat_yesterday=False, stat_al
                 start_date))
     # 获得原始数据
     if stat_all:
-        raw_data = PaperEduRaw.objects.filter()
+        raw_data = SiteRawData.objects.filter()
     else:
-        raw_data = PaperEduRaw.objects.filter(
+        raw_data = SiteRawData.objects.filter(
             pub_date__gte=count_date_start,
             pub_date__lte=count_date_end,
         )
@@ -49,15 +49,15 @@ def classification(start_date=None, end_date=None, stat_yesterday=False, stat_al
 
 
 def _classification(raw_data, keywords_cns, keywords_ens):
-    assert isinstance(raw_data, PaperEduRaw)
+    assert isinstance(raw_data, SiteRawData)
     if len(keywords_ens) != len(keywords_cns):
         logger.exception(u'中文英文关键字个数对应错误，查看此数据\nraw id:%s\nurl:%s',
                 raw_data.id, raw_data.url)
         return
     keywords = zip(keywords_cns, keywords_ens)
     for word_cn, word_en in keywords:
-        pe_word_cn = PaperEduKeyWordCN.objects.get_or_create(word=word_cn)[0]
-        pe_word_en = PaperEduKeyWordEN.objects.get_or_create(word=word_en)[0]
+        pe_word_cn = KeyWordCN.objects.get_or_create(word=word_cn)[0]
+        pe_word_en = KeyWordEN.objects.get_or_create(word=word_en)[0]
         pe_word_cn.raw_data.add(raw_data)
         pe_word_en.raw_data.add(raw_data)
         pe_word_en.cn_word.add(pe_word_cn)

@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'djcelery',
     'south',
-    'paper_edu',
+    'rest_framework',
+    'sites',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +65,7 @@ DB_MASTER = 'default'
 DATABASES = {
     DB_MASTER: {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tect_dict',
+        'NAME': 'tech_dict',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': '127.0.0.1',
@@ -91,6 +92,17 @@ USE_TZ = True
 STATIC_ROOT = './'
 STATIC_URL = '/static/'
 
+#------------------------- rest ---------------------
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    ),
+}
+
+#------------------------- logging ---------------------
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -106,17 +118,17 @@ LOGGING = {
         }
     },
     'handlers': {
-        'paper_edu': {
+        'sites': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'paper_edu.log'),
+            'filename': os.path.join(LOG_DIR, 'sites.log'),
             'maxBytes': 1024*1024*50, # 50 MB
             'backupCount': 10,
             'formatter':'standard',
         },
     },
     'loggers': {
-        'paper_edu': {'handlers': ['paper_edu'], 'level': 'DEBUG', 'propagate': True},
+        'sites': {'handlers': ['sites'], 'level': 'DEBUG', 'propagate': True},
     }
 }
 
@@ -151,7 +163,7 @@ CELERY_EXPIRES_TIME = 18000 # 过期时间 单位s
 
 CONN_MAX_AGE = 10
 
-CELERY_IMPORTS = ('paper_edu',)
+CELERY_IMPORTS = ('sites',)
 
 # 队列配置
 keys = list(CELERY_IMPORTS)
@@ -169,7 +181,7 @@ class MyRouter(object):
     def route_for_task(self, task, args=None, kwargs=None):
 
         _mapper = {
-            'paper_edu.tasks': {'queue': 'paper_edu'},
+            'sites.tasks': {'queue': 'sites'},
             'celery.backend_cleanup': {'queue': 'backend_cleanup'},
         }
 

@@ -5,7 +5,7 @@
 
 from scrapy.item import Item, Field
 from scrapy.contrib.djangoitem import DjangoItem
-from paper_edu.models import PaperEduRaw
+from sites.models import SiteRawData
 
 class PaperEduItem(DjangoItem):
-    django_model = PaperEduRaw
+    django_model = SiteRawData

@@ -27,3 +27,7 @@ scrapy相关
 
     sys.path.insert(0, DJANGO_PROJECT_PATH)
     os.environ['DJANGO_SETTINGS_MODULE'] = DJANGO_PROJECT_NAME + '.settings'
+
+抓取命名
+---
+    scrapy crawl paper_edu_spider -a start_date=2014-03-01 -a end_date=2014-03-10

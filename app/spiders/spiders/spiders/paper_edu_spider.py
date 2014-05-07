@@ -11,11 +11,13 @@ from scrapy.selector import Selector
 import spiders.misc.log as log
 from spiders.misc.utils import str_to_date, date_to_str, range_date
 from spiders.items import PaperEduItem
+import model_settings as config
+
+SITE_PAPER_EDU = config.SITE_PAPER_EDU
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 SEMICOLON_PATTERN = re.compile(u'[;；]')
 REDIRECT_PATTERN = re.compile('(/html/releasepaper/((\d+)/)*)')
-KEYWORDS_EN_RE_2 = '//*[@id="right"]/div[2]/div[2]/div[4]/text()[4]'
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
@@ -161,6 +163,8 @@ class PaperEduSpider(CrawlSpider):
         pub_date = tip.re(u'发布时间：\s*(\d+-\d+-\d+)')
 
         item = loader.load_item()
+        # 站点标识
+        item['site_id'] = SITE_PAPER_EDU
         # 特殊字段处理
 
         # keywords页面不规范

@@ -7,7 +7,7 @@ MAX_LENGTH_100 = config.MAX_LENGTH_100
 MAX_LENGTH_200 = config.MAX_LENGTH_200
 MAX_LENGTH_1024 = config.MAX_LENGTH_1024
 
-class PaperEduRaw(models.Model):
+class SiteRawData(models.Model):
     '''
         中国科技论文在线
 
@@ -44,6 +44,10 @@ class PaperEduRaw(models.Model):
 
     def iteritems(self):
         return ((attr, getattr(self, attr)) for attr in self.ATTRS)
+
+    site_id = models.IntegerField(
+        verbose_name=u'原数据网站id',
+    )
 
     title_cn = models.CharField(
         verbose_name=u'标题_中',
@@ -165,7 +169,7 @@ class PaperEduRaw(models.Model):
     def __unicode__(self):
         return self.url
 
-class PaperEduKeyWordCN(models.Model):
+class KeyWordCN(models.Model):
     '''中文关键字'''
     word = models.CharField(
         verbose_name=u'中文关键词',
@@ -173,13 +177,13 @@ class PaperEduKeyWordCN(models.Model):
         unique=True,
     )
     raw_data = models.ManyToManyField(
-        'paper_edu.PaperEduRaw',
+        'sites.SiteRawData',
         verbose_name=u'原始抓取数据',
     )
     def __unicode__(self):
         return self.word
 
-class PaperEduKeyWordEN(models.Model):
+class KeyWordEN(models.Model):
     '''英文关键字'''
     word = models.CharField(
         verbose_name=u'英文关键词',
@@ -187,11 +191,11 @@ class PaperEduKeyWordEN(models.Model):
         unique=True,
     )
     raw_data = models.ManyToManyField(
-        'paper_edu.PaperEduRaw',
+        'sites.SiteRawData',
         verbose_name=u'原始抓取数据',
     )
     cn_word = models.ManyToManyField(
-        'paper_edu.PaperEduKeyWordCN',
+        'sites.KeyWordCN',
         verbose_name=u'中文关键字',
     )
     def __unicode__(self):
