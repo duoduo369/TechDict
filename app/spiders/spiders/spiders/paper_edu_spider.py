@@ -14,10 +14,12 @@ from spiders.items import PaperEduItem
 import model_settings as config
 
 SITE_PAPER_EDU = config.SITE_PAPER_EDU
+SUBJECT_ID = config.SUBJECT_ID
 
 URL_PREFIX = u'http://www.paper.edu.cn/advanced_search/resultHighSearch'
 SEMICOLON_PATTERN = re.compile(u'[;；]')
 REDIRECT_PATTERN = re.compile('(/html/releasepaper/((\d+)/)*)')
+REDIRECT_PATTERN_2 = re.compile('(/releasepaper/content/(\d+-)*\d+)')
 
 class PaperEduSpider(CrawlSpider):
     name = 'paper_edu_spider'
@@ -131,11 +133,10 @@ class PaperEduSpider(CrawlSpider):
         '''
             处理start url第一页
         '''
-        url = response.url
-        log.info('start url: {url}'.format(url=url))
+        #url = response.url
+        #log.info('start url: {url}'.format(url=url))
 
     def parse_content(self, response):
-        log.info('parse_content')
         django_istance = self._Model.objects.filter(url=response.url)
         # django obj之前存在,并且不重抓则忽略此条
         if django_istance and not self.refetch:
@@ -163,9 +164,15 @@ class PaperEduSpider(CrawlSpider):
         pub_date = tip.re(u'发布时间：\s*(\d+-\d+-\d+)')
 
         item = loader.load_item()
+        # 特殊字段处理
+
         # 站点标识
         item['site_id'] = SITE_PAPER_EDU
-        # 特殊字段处理
+
+        # 分类标识
+        title = sel.css('title::text').extract()[0]
+        subject = title.split(' - ')[1]
+        item['subject_id'] = SUBJECT_ID.get(subject, -1)
 
         # keywords页面不规范
         for attr, xpath_correction in self._XPATH_CORRECTION.iteritems():
@@ -201,12 +208,12 @@ class PaperEduSpider(CrawlSpider):
 
     def redirect_request(self, response):
         '''网站改版，旧网页变成重定向'''
-        log.info('redirect_request')
-        yield Request(
-            url='http://www.paper.edu.cn{url}'.format(
-                url=REDIRECT_PATTERN.search(response.body).group()),
-            callback=self.parse_content,
-        )
+        _url = 'http://www.paper.edu.cn{url}'
+        try:
+            url = _url.format(url=REDIRECT_PATTERN.search(response.body).group())
+        except AttributeError:
+            url = _url.format(url=REDIRECT_PATTERN_2.search(response.body).group())
+        yield Request(url=url, callback=self.parse_content)
 
 
 class PaperEduSpiderOnePage(PaperEduSpider):
