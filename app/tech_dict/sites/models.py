@@ -33,7 +33,8 @@ class SiteRawData(models.Model):
             updated_at 记录更新日期
             raw_html
     '''
-    ATTRS = ['title_cn', 'title_en', 'authors_cn', 'authors_en',
+    ATTRS = ['site_id', 'subject_id',
+             'title_cn', 'title_en', 'authors_cn', 'authors_en',
              'locations_cn', 'locations_en', 'abstract_cn',
              'abstract_en', 'keywords_cn', 'keywords_en', 'pub_date',
              'impressions', 'collections', 'comments', 'pdf_download',
@@ -47,6 +48,11 @@ class SiteRawData(models.Model):
 
     site_id = models.IntegerField(
         verbose_name=u'原数据网站id',
+    )
+
+    subject_id = models.IntegerField(
+        verbose_name=u'分类id',
+        default=0,
     )
 
     title_cn = models.CharField(
