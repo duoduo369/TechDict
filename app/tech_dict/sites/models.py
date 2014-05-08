@@ -6,6 +6,7 @@ MAX_LENGTH_20 = config.MAX_LENGTH_20
 MAX_LENGTH_100 = config.MAX_LENGTH_100
 MAX_LENGTH_200 = config.MAX_LENGTH_200
 MAX_LENGTH_1024 = config.MAX_LENGTH_1024
+ID_SUBJECT = config.ID_SUBJECT
 
 class SiteRawData(models.Model):
     '''
@@ -54,6 +55,10 @@ class SiteRawData(models.Model):
         verbose_name=u'分类id',
         default=0,
     )
+
+    @property
+    def subject(self):
+        return ID_SUBJECT(self.subject_id)
 
     title_cn = models.CharField(
         verbose_name=u'标题_中',
@@ -186,6 +191,11 @@ class KeyWordCN(models.Model):
         'sites.SiteRawData',
         verbose_name=u'原始抓取数据',
     )
+
+    @property
+    def raw_data_count(self):
+        return self.raw_data.count()
+
     def __unicode__(self):
         return self.word
 
@@ -204,5 +214,10 @@ class KeyWordEN(models.Model):
         'sites.KeyWordCN',
         verbose_name=u'中文关键字',
     )
+
+    @property
+    def raw_data_count(self):
+        return self.raw_data.count()
+
     def __unicode__(self):
         return self.word
