@@ -58,7 +58,7 @@ class SiteRawData(models.Model):
 
     @property
     def subject(self):
-        return ID_SUBJECT(self.subject_id)
+        return ID_SUBJECT[self.subject_id]
 
     title_cn = models.CharField(
         verbose_name=u'标题_中',
@@ -196,6 +196,10 @@ class KeyWordCN(models.Model):
     def raw_data_count(self):
         return self.raw_data.count()
 
+    @property
+    def trans(self):
+        return self.keyworden_set.all()
+
     def __unicode__(self):
         return self.word
 
@@ -218,6 +222,10 @@ class KeyWordEN(models.Model):
     @property
     def raw_data_count(self):
         return self.raw_data.count()
+
+    @property
+    def trans(self):
+        return self.cn_word.all()
 
     def __unicode__(self):
         return self.word
