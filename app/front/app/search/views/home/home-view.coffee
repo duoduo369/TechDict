@@ -7,6 +7,6 @@ module.exports = class HomeView extends View
   template: require './templates/home'
 
   regions:
-    'header': '.header'
+    'header': 'header'
     'container': '.container'
-    'footer': '.footer'
+    'footer': 'footer'

@@ -12,8 +12,8 @@ module.exports = class ListView extends CollectionView
   listSelector: 'ul'
   template: require './templates/list'
 
-  events:
-    'click button': 'addItem'
+  subscribe:
+    'search': 'addItem'
 
   initialize: ->
     @collection = new List

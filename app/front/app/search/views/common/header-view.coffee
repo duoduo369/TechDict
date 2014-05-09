@@ -6,4 +6,3 @@ module.exports = class HeaderView extends View
   template: require './templates/header'
   initialize: ->
     super
-    console.log 'header'
