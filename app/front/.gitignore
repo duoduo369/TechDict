@@ -27,7 +27,9 @@ tmp/
 
 # Brunch output folder.
 public/
-static/
 
 # Bower stuff.
+# Bower 对我们网速慢的人来说完全是煎熬
 bower_components/
+
+generators/

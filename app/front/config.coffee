@@ -1,18 +1,23 @@
 exports.config =
+  plugins:
+    autoReload:
+      port: 9485
+    coffeelint:
+      pattern: /^app\/.*\.coffee$/
+      options:
+        no_trailing_semicolons:
+          level: "ignore"
+        max_line_length:
+          level: "ignore"
   # See http://brunch.io/#documentation for docs.
-  conventions:
-    assets: /^app\/assets\//
-  modules:
-    definition: false
-    wrapper: false
-  paths:
-    public: 'static'
   files:
     javascripts:
       joinTo:
-        'js/app.js': /^app/
-        'js/vendor.js': /^bower_components/
+        'javascripts/app.js': /^app|(?!zarfx)/
+        'javascripts/vendor.js': /^(?!app)/
+
     stylesheets:
-      joinTo: 'css/app.css'
+      joinTo: 'stylesheets/app.css'
+
     templates:
-      joinTo: 'app.js'
+      joinTo: 'javascripts/app.js'
