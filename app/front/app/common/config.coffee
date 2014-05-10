@@ -2,4 +2,4 @@ module.exports =
 
   pushState: no
   controllerSuffix: ''
-  apiRoot: 'http://127.0.0.1:8080'
+  apiRoot: 'http://www.api.tect_dict.com'

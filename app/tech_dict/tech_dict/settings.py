@@ -22,12 +22,18 @@ LOG_DIR = os.path.join(BASE_DIR, 'log')
 SECRET_KEY = 'x@18g06lly@wn@vla#bh&ms)^-jbtmo3lk8z2g55o7r#@t&lyb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
-
+#ALLOWED_HOSTS = ['*',]
+#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'django', # server_name www.api.tect_dict.com;
+              # location / 下的
+              # nginx proxy_pass http://django;
+]
+#ALLOWED_HOSTS = '*'
 
 # Application definition
 
