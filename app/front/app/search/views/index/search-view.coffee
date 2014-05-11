@@ -4,6 +4,7 @@ publish = Chaplin.mediator.publish
 module.exports = class SearchView extends View
   autoRender: true
   container: '.search'
+  className: 'pure-form'
   template: require './templates/search'
   events:
     'click button': 'search'

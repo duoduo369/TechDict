@@ -8,7 +8,7 @@ module.exports = class IndexView extends View
 
   regions:
     'search': '.search'
-    'word-cloud': '.word-cloud'
+    'search-display': '.search-display'
 
   initialize: ->
     super

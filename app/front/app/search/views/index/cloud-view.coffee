@@ -3,11 +3,12 @@ WordCollection = require 'search/models/word-collection'
 
 module.exports = class CloudView extends View
   autoRender: true
-  className: 'abc'
-  container: '.word-cloud'
+  noWrap: true
   template: require './templates/word-cloud'
   events:
     'click button': 'search'
+  svg_w: 960
+  svg_h: 300
 
   initialize: =>
     super
@@ -25,7 +26,7 @@ module.exports = class CloudView extends View
       'word': word.get('word')
       'word_count': word.get('raw_data_count')
 
-    d3.layout.cloud().size([600, 300])
+    d3.layout.cloud().size([@svg_w * 1.8, @svg_h * 1.8])
       .words(words
       .map (d) -> return {text: d['word'], size: 18 + 6 * d['word_count']})
       .padding(5)
@@ -35,11 +36,12 @@ module.exports = class CloudView extends View
       .on("end", @draw)
       .start()
 
-  draw: (words)->
+  draw: (words)=>
     fill = d3.scale.category20()
-    d3.select('.word-cloud').append("svg")
-      .attr("width", 600)
-      .attr("height", 300)
+    d3.select('.search-display').append("svg")
+      .attr("width", @svg_w)
+      .attr("height", @svg_h)
+      .attr("class", 'word-cloud')
       .append("g")
       .attr("transform", "translate(150,150)")
       .selectAll("text")
