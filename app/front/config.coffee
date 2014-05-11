@@ -15,6 +15,8 @@ exports.config =
       joinTo:
         'javascripts/app.js': /^app|(?!zarfx)/
         'javascripts/vendor.js': /^(?!app)/
+        #'javascripts/vendor.js': /^(?!app)|^lib/
+        #'javascripts/vendor.js': /^(?!app)|node_modules\/d3\.layout\.cloud/
 
     stylesheets:
       joinTo: 'stylesheets/app.css'

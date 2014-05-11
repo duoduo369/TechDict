@@ -1,20 +1,22 @@
 #coding: utf-8
-
+from __future__ import absolute_import
 from rest_framework import serializers, fields
+from tech_dict.serializers import DynamicFieldsModelSerializer
 
 from sites.models import SiteRawData, KeyWordCN, KeyWordEN
 
 
-class SiteRawDataSeri(serializers.ModelSerializer):
+class SiteRawDataSeri(DynamicFieldsModelSerializer):
 
     subject = serializers.CharField()
 
     class Meta:
         model = SiteRawData
 
-class KeyWordENSeri(serializers.ModelSerializer):
+class KeyWordENSeri(DynamicFieldsModelSerializer):
 
     raw_data = SiteRawDataSeri()
+    raw_data_count = serializers.IntegerField()
 
     class Meta:
         model = KeyWordEN
@@ -26,9 +28,10 @@ class KeyWordENSeri(serializers.ModelSerializer):
             result.append({attr: each[attr] for attr in attrs})
         return result
 
-class KeyWordCNSeri(serializers.ModelSerializer):
+class KeyWordCNSeri(DynamicFieldsModelSerializer):
 
     raw_data = SiteRawDataSeri()
+    raw_data_count = serializers.IntegerField()
 
     class Meta:
         model = KeyWordCN
