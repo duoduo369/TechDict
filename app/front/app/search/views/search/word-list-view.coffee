@@ -8,6 +8,73 @@ module.exports = class WordListView extends CollectionView
   itemView: ItemView
   listSelector: '.list'
 
+  events:
+    'mouseover .search-word-item': 'hover_in_item'
+    'mouseout .search-word-item': 'hover_out_item'
+    'click .search-word-item': 'click_item'
+    'click .search-word-item .rb-close': 'click_item_close'
+
+  hover_in_item: (e)->
+    $cur = $(e.currentTarget or e)
+    $('> h3', $cur).css('opacity', 1)
+      .css('transition', 'opacity 0.3s ease-in-out')
+    $('> span', $cur).css('opacity', .8)
+      .css('transition', 'opacity 0.3s ease-in-out')
+
+  hover_out_item: (e)->
+    $cur = $(e.currentTarget or e)
+    $('> h3', $cur).css('opacity', .8)
+      .css('transition', 'opacity 0.3s ease-in-out')
+    $('> span', $cur).css('opacity', .6)
+      .css('transition', 'opacity 0.3s ease-in-out')
+
+  click_item: (e)->
+    $cur = $(e.currentTarget or e)
+    $overlay = $('.rb-overlay', $cur)
+    $close = $('.rb-close', $cur)
+    $overlay.css('opacity', 1).css('zIndex', 9999).css('pointer-events','auto')
+
+  click_item_close: (e)->
+    $cur = $(e.currentTarget or e)
+    $overlay = $cur.parent()
+    $overlay.css('opacity', 0)
+      .css('zIndex', -1)
+      .css('pointer-events', 'none')
+    e.stopPropagation()
+
   initialize: ->
     super
     @collection.fetch({data:@collection.options['data']})
+
+  renderItem: (item) ->
+    super
+
+  insertView: (item, view, position, enableAnimation = true) =>
+    # 将word item中背景样式补全
+    _position = position
+    unless typeof position is 'number'
+      _position = @collection.indexOf item
+    $el = view.$el
+    _position = _position % 10 + 1
+    if not _position
+      _position = 10
+    class_1 = 'bg-' + _position
+    $el.addClass(class_1)
+    # 将word item弹出层样式和文字补全
+    trans = item.get('trans')
+    trans = if trans then trans else []
+    trans_length = trans.length
+    if trans_length < 7
+      for i in [trans_length...7]
+        trans[i] = undefined
+
+    $('.search-word', $el).addClass(class_1)
+    $dom_sw = $('.search-word-trans', $el)
+    for i in [1..7]
+      obj = trans[i-1]
+      dom_string = if obj then '<span>'+obj['word']+'</span>' else '<span></span>'
+      $(dom_string)
+        .addClass('trans-word')
+        .addClass(class_1+'-'+i)
+        .appendTo($dom_sw)
+    super

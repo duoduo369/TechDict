@@ -1,6 +1,16 @@
-<li class="pure-u-1-3">
+<li class="text-center search-word-item">
   <h3>
     {{word}}
   </h3>
-  {{#each trans}}{{word}}{{/each}}
+  <span>
+    {{#each trans}}{{word}}{{/each}}
+  </span>
+  <div class="rb-overlay">
+    <span class="rb-close"></span>
+    <div class="rb-detail text-center">
+      <div class="search-word"><span class="word">{{word}}<span></div>
+      <div class="search-word-trans">
+      </div>
+    </div>
+  </div>
 </li>
