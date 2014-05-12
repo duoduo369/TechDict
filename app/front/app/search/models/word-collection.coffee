@@ -5,4 +5,4 @@ module.exports = class WordCollection extends Collection
 
   model: Item
 
-  urlPath: -> "/search"
+  urlPath: -> "/wordcloud"

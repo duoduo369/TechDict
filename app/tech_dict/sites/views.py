@@ -26,6 +26,27 @@ KEYWORD_MAPPER = {
     }
 }
 
+def top_n(n=300, cut_filed=True):
+    '''
+        返回 n * len(KEYWORD_MAPPER)
+    '''
+    op = itemgetter('id')
+    seri_data = []
+    for each in KEYWORD_MAPPER.itervalues():
+        Model = each['keyword_model']
+        Seri = each['keyword_seri']
+        ids = Model.objects.values('id').\
+            annotate(raw_data_count=Count('raw_data'))[:n]
+        _ids = (op(each) for each in ids)
+        result = Model.objects.filter(~Q(word=''), id__in=_ids)
+        if cut_filed:
+            serilizer = Seri(result, many=True,
+                             exclude_fields=('raw_data','trans', 'cn_word'))
+        else:
+            serilizer = Seri(result, many=True,)
+        seri_data.extend(serilizer.data)
+    return sorted(seri_data, key=itemgetter('raw_data_count'), reverse=True)
+
 class SearchView(BaseView):
 
     def get_param(self, request):
@@ -33,27 +54,12 @@ class SearchView(BaseView):
         attrs = ('word', 'subject')
         return {attr: data.get(attr, None) for attr in attrs}
 
-    def top_n(self, n=300):
-        op = itemgetter('id')
-        seri_data = []
-        for each in KEYWORD_MAPPER.itervalues():
-            Model = each['keyword_model']
-            Seri = each['keyword_seri']
-            ids = Model.objects.values('id').\
-                annotate(raw_data_count=Count('raw_data'))[:n]
-            _ids = (op(each) for each in ids)
-            result = Model.objects.filter(~Q(word=''), id__in=_ids)
-            serilizer = Seri(result, many=True,
-                             exclude_fields=('raw_data','trans', 'cn_word'))
-            seri_data.extend(serilizer.data)
-        return sorted(seri_data, key=itemgetter('raw_data_count'), reverse=True)
-
     def get(self, request):
         params = self.get_param(request)
         word = params['word']
         subject = params['subject']
         if not word:
-            return Response(self.top_n())
+            return Response(top_n(20, cut_filed=False))
         query_args = {'word__contains': word,}
         if subject and subject in SUBJECT_ID:
             query_args['raw_data__subject_id'] = SUBJECT_ID[subject]
@@ -64,3 +70,8 @@ class SearchView(BaseView):
         result = _Model.objects.filter(**query_args)
         serilizer = _Seri(result, many=True)
         return Response(serilizer.data)
+
+class WordCloudView(BaseView):
+
+    def get(get, request):
+        return Response(top_n(20))
