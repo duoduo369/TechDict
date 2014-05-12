@@ -1,5 +1,5 @@
 View = require 'common/views/base/view'
-WordCollection = require 'search/models/word-collection'
+WordCloudCollection = require 'search/models/word-cloud-collection'
 
 module.exports = class CloudView extends View
   autoRender: true
@@ -12,7 +12,6 @@ module.exports = class CloudView extends View
 
   initialize: =>
     super
-    #@collection = new WordCollection
     @collection.fetch
       success: =>
         @init_cloud()

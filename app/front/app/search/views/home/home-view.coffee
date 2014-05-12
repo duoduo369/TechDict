@@ -4,6 +4,7 @@ module.exports = class HomeView extends View
 
   autoRender: true
   container: 'body'
+  className: 'full-width p-relative'
   template: require './templates/home'
 
   regions:
