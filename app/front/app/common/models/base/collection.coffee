@@ -10,3 +10,7 @@ module.exports = class Collection extends Chaplin.Collection
 
   url: ->
     "#{@apiRoot}#{@urlPath()}"
+
+  initialize: (options={})=>
+    super
+    @options = options

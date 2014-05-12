@@ -6,3 +6,7 @@ module.exports = class Model extends Chaplin.Model
   urlRoot: ->
     return "#{@apiRoot}#{@urlPath()}" if @id or not @collection
     return "#{@apiRoot}#{@collection.urlPath()}"
+
+  initialize: (options={})=>
+    super
+    @options = options

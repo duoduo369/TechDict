@@ -3,7 +3,8 @@ HeaderView = require 'search/views/common/header-view'
 HomeView = require 'search/views/home/home-view'
 IndexView = require 'search/views/index/index-view'
 SearchView = require 'search/views/index/search-view'
-WordCollection = require 'search/models/word-collection'
+WordCloudCollection = require 'search/models/word-cloud-collection'
+WordSearchCollection = require 'search/models/word-search-collection'
 WordCollectionView = require 'search/views/search/word-list-view'
 
 module.exports = class SearchController extends Controller
@@ -15,8 +16,9 @@ module.exports = class SearchController extends Controller
     @reuse 'search', SearchView, region: 'search'
 
   search: (params, route, options)->
-    console.log options['query']['word']
-    console.log 'search'
+    query_word = options['query']['word']
     new WordCollectionView
       region: 'search-display'
-      collection: new WordCollection
+      collection: new WordSearchCollection
+        data:
+          word: query_word

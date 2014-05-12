@@ -10,4 +10,5 @@ module.exports = class WordListView extends CollectionView
 
   initialize: ->
     super
-    @collection.fetch()
+    console.log @collection.options['data']
+    @collection.fetch({data:@collection.options['data']})

@@ -1,7 +1,7 @@
 Collection = require 'common/models/base/collection'
-Item = require './word-item'
+Item = require './word-cloud-item'
 
-module.exports = class WordCollection extends Collection
+module.exports = class WordCloudCollection extends Collection
 
   model: Item
 

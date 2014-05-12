@@ -74,4 +74,4 @@ class SearchView(BaseView):
 class WordCloudView(BaseView):
 
     def get(get, request):
-        return Response(top_n(20))
+        return Response(top_n(150))
