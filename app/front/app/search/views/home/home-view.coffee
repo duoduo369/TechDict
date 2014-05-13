@@ -4,6 +4,7 @@ module.exports = class HomeView extends View
 
   autoRender: true
   container: 'body'
+  keepElement: true
   template: require './templates/home'
 
   regions:

@@ -15,9 +15,9 @@ module.exports = class SearchController extends Controller
     @reuse 'container', IndexView, region: 'container'
     @reuse 'search', SearchView, region: 'search'
 
-  search: (params, route, options)->
+  search: (params, route, options)=>
     query_word = options['query']['word']
-    new WordCollectionView
+    @word_collection_view = new WordCollectionView
       region: 'search-display'
       collection: new WordSearchCollection
         data:

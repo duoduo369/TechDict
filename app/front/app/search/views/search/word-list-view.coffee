@@ -1,5 +1,6 @@
 CollectionView = require 'common/views/base/collection-view'
 ItemView = require './word-item-view'
+utils = require 'common/lib/utils'
 subscribe = Chaplin.mediator.subscribe
 
 module.exports = class WordListView extends CollectionView
@@ -13,6 +14,7 @@ module.exports = class WordListView extends CollectionView
     'mouseout .search-word-item': 'hover_out_item'
     'click .search-word-item': 'click_item'
     'click .search-word-item .rb-close': 'click_item_close'
+    'click .subject-list li a': 'click_button'
 
   hover_in_item: (e)->
     $cur = $(e.currentTarget or e)
@@ -62,6 +64,11 @@ module.exports = class WordListView extends CollectionView
       .css('pointer-events', 'none')
     e.stopPropagation()
 
+  click_button: (e)=>
+    $cur = $(e.currentTarget or e)
+    #@collection.remove()
+    #@dispose()
+
   initialize: =>
     super
     @collection.fetch
@@ -71,13 +78,18 @@ module.exports = class WordListView extends CollectionView
         @loading_done()
 
   init_subject_list: (items) =>
+    root = utils.get_root_url()
+    params = utils.get_url_params()
     raw_data = _.pluck(items, 'raw_data')
     subjects = _.map(raw_data, (data) -> return _.pluck(data, 'subject'))
     subjects = _.flatten(_.map(raw_data, (data) -> return _.pluck(data, 'subject')))
     subjects = _.uniq(subjects)
     $subject_list = $('.subject-list', @$el)
-    _.each(subjects, (sub) -> $subject_list.append(
-      '<li><a class="button-xsmall pure-button">'+sub+'</a></li>'))
+    _.each(subjects, (sub) ->
+      str = '<li><a class="button-xsmall pure-button" '
+      str +='href="/!/search?word='+params['word']+'&subject='+sub+'">'
+      str += sub+'</a></li>'
+      $subject_list.append(str))
 
 
   insertView: (item, view, position, enableAnimation = true) =>
