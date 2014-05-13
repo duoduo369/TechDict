@@ -13,4 +13,3 @@ module.exports = class SearchView extends View
 
   search: ->
     publish 'search', $('#search_input').val()
-

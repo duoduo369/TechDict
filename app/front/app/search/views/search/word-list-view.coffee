@@ -44,7 +44,9 @@ module.exports = class WordListView extends CollectionView
 
   initialize: ->
     super
-    @collection.fetch({data:@collection.options['data']})
+    @collection.fetch
+      data: @collection.options['data']
+      success: @loading_done
 
   renderItem: (item) ->
     super

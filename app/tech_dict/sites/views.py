@@ -60,7 +60,7 @@ class SearchView(BaseView):
         subject = params['subject']
         if not word:
             return Response(top_n(20, cut_filed=False))
-        query_args = {'word__contains': word,}
+        query_args = {'word__icontains': word,}
         if subject and subject in SUBJECT_ID:
             query_args['raw_data__subject_id'] = SUBJECT_ID[subject]
         # 语言检测

@@ -14,6 +14,7 @@ module.exports = class CloudView extends View
     super
     @collection.fetch
       success: =>
+        @loading_done()
         @init_cloud()
 
   search: ->
