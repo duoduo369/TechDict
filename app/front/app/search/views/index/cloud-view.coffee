@@ -48,6 +48,7 @@ module.exports = class CloudView extends View
       .enter().append("text")
         .style("font-size", (d)-> return d.size + "px")
         .style("font-family", "Impact")
+        .style("cursor", "default")
         .style("fill", (d, i)-> return fill(i))
         .attr("text-anchor", "middle")
         .attr("transform", (d)->
