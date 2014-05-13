@@ -22,7 +22,7 @@ class KeyWordENSeri(DynamicFieldsModelSerializer):
         model = KeyWordEN
 
     def transform_raw_data(self, obj, value):
-        attrs = ('id', 'title_en', 'subject_id', 'subject', 'url')
+        attrs = ('id', 'title_cn', 'title_en', 'subject_id', 'subject', 'url')
         result = []
         for each in value:
             result.append({attr: each[attr] for attr in attrs})
@@ -37,7 +37,7 @@ class KeyWordCNSeri(DynamicFieldsModelSerializer):
         model = KeyWordCN
 
     def transform_raw_data(self, obj, value):
-        attrs = ('id', 'title_cn', 'subject_id', 'subject', 'url')
+        attrs = ('id', 'title_cn', 'title_en', 'subject_id', 'subject', 'url')
         result = []
         for each in value:
             result.append({attr: each[attr] for attr in attrs})

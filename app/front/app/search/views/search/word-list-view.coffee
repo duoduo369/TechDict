@@ -59,6 +59,7 @@ module.exports = class WordListView extends CollectionView
     if not _position
       _position = 10
     class_1 = 'bg-' + _position
+    fg_class_1 = 'fg-' + _position
     $el.addClass(class_1)
     # 将word item弹出层样式和文字补全
     trans = item.get('trans')
@@ -72,7 +73,21 @@ module.exports = class WordListView extends CollectionView
     $dom_sw = $('.search-word-trans', $el)
     for i in [1..7]
       obj = trans[i-1]
-      dom_string = if obj then '<span>'+obj['word']+'</span>' else '<span></span>'
+      dom_string = '<div></div>'
+      if obj
+        raw_data = obj['raw_data']
+        dom_string = '<div><span>'+obj['word']+'</span><ul>'
+        raw_data_length = raw_data.length
+        if raw_data_length < 4
+          for j in [raw_data_length...4]
+            raw_data[j] = undefined
+        for j in [1..4]
+          raw = raw_data[j-1]
+          if raw
+            dom_string += '<li><a href="'+raw['url']+'" target=_blank>'
+            dom_string += raw['title_cn']+'</a></li>'
+        dom_string += '</ul></div>'
+
       $(dom_string)
         .addClass('trans-word')
         .addClass(class_1+'-'+i)
