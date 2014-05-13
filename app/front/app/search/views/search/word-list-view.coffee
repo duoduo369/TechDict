@@ -16,17 +16,37 @@ module.exports = class WordListView extends CollectionView
 
   hover_in_item: (e)->
     $cur = $(e.currentTarget or e)
-    $('> h3', $cur).css('opacity', 1)
-      .css('transition', 'opacity 0.3s ease-in-out')
-    $('> span', $cur).css('opacity', .8)
-      .css('transition', 'opacity 0.3s ease-in-out')
+    bg = $cur.attr('class').match(/(bg-(\d+))/)
+    if bg
+      bg_old = bg[0]
+      bg_num = bg[2]
+      $cur.removeClass(bg_old)
+        .addClass('bd-'+bg_num)
+        .css('transition', '.3s ease-in-out')
+      $('> h3', $cur).css('opacity', 1)
+        .addClass('fg-'+bg_num)
+        .css('transition', 'opacity .3s ease-in-out')
+      $('> span', $cur).css('opacity', .8)
+        .addClass('fg-'+bg_num)
+        .css('transition', 'opacity .3s ease-in-out')
 
   hover_out_item: (e)->
     $cur = $(e.currentTarget or e)
-    $('> h3', $cur).css('opacity', .8)
-      .css('transition', 'opacity 0.3s ease-in-out')
-    $('> span', $cur).css('opacity', .6)
-      .css('transition', 'opacity 0.3s ease-in-out')
+    bg = $cur.attr('class').match(/(bd-(\d+))/)
+    if bg
+      bd = bg[0]
+      bg_num = bg[2]
+      $cur.removeClass(bd)
+        .addClass('bg-'+bg_num)
+        .css('transition', '.3s ease-in-out')
+    $('> h3', $cur)
+      .removeClass('fg-'+bg_num)
+      .css('opacity', .8)
+      .css('transition', 'opacity .3s ease-in-out')
+    $('> span', $cur)
+      .removeClass('fg-'+bg_num)
+      .css('opacity', .6)
+      .css('transition', 'opacity .3s ease-in-out')
 
   click_item: (e)->
     $cur = $(e.currentTarget or e)
@@ -42,14 +62,23 @@ module.exports = class WordListView extends CollectionView
       .css('pointer-events', 'none')
     e.stopPropagation()
 
-  initialize: ->
+  initialize: =>
     super
     @collection.fetch
       data: @collection.options['data']
-      success: @loading_done
+      success: (collection, response) =>
+        @init_subject_list(response)
+        @loading_done()
 
-  renderItem: (item) ->
-    super
+  init_subject_list: (items) =>
+    raw_data = _.pluck(items, 'raw_data')
+    subjects = _.map(raw_data, (data) -> return _.pluck(data, 'subject'))
+    subjects = _.flatten(_.map(raw_data, (data) -> return _.pluck(data, 'subject')))
+    subjects = _.uniq(subjects)
+    $subject_list = $('.subject-list', @$el)
+    _.each(subjects, (sub) -> $subject_list.append(
+      '<li><a class="button-xsmall pure-button">'+sub+'</a></li>'))
+
 
   insertView: (item, view, position, enableAnimation = true) =>
     # 将word item中背景样式补全
