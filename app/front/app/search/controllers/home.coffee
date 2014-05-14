@@ -4,6 +4,7 @@ HomeView = require 'search/views/home/home-view'
 IndexView = require 'search/views/index/index-view'
 SearchView = require 'search/views/index/search-view'
 CloudView = require 'search/views/index/cloud-view'
+Model = require 'common/models/base/model'
 WordCloudCollection = require 'search/models/word-cloud-collection'
 
 module.exports = class HomeController extends Controller
@@ -17,6 +18,8 @@ module.exports = class HomeController extends Controller
       region: 'container'
     @search_view = new SearchView
       region: 'search'
+      model: new Model
+
     @cloud_view = new CloudView
       region: 'search-display'
       collection: new WordCloudCollection

@@ -64,7 +64,7 @@ module.exports = class WordListView extends CollectionView
       .css('pointer-events', 'none')
     e.stopPropagation()
 
-  click_button: (e)=>
+  click_button: (e)->
     $cur = $(e.currentTarget or e)
     #@collection.remove()
     #@dispose()
