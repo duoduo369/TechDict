@@ -12,11 +12,11 @@ module.exports = class HomeController extends Controller
     @reuse 'home', HomeView
     @reuse 'header', HeaderView, region: 'header'
 
-  index: ->
-    new IndexView
+  index: =>
+    @index_view = new IndexView
       region: 'container'
-    new SearchView
+    @search_view = new SearchView
       region: 'search'
-    new CloudView
+    @cloud_view = new CloudView
       region: 'search-display'
       collection: new WordCloudCollection
