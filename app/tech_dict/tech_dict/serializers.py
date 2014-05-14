@@ -2,7 +2,15 @@
 
 from rest_framework import serializers
 
-class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+class ExtraOptionsModelSerializer(serializers.ModelSerializer):
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        self.extra_options = kwargs.pop('extra_options', None)
+        super(ExtraOptionsModelSerializer, self).__init__(*args, **kwargs)
+
+
+class DynamicFieldsModelSerializer(ExtraOptionsModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
     controls which fields should be displayed.

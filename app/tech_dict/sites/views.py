@@ -26,7 +26,12 @@ KEYWORD_MAPPER = {
     }
 }
 
-def top_n(n=300, cut_filed=True):
+def filter_seri_data(data):
+    '''过滤不该出现的数据'''
+    return [each for each in data if each['raw_data']]
+
+
+def top_n(n=None, subject_id=None, cut_filed=True):
     '''
         返回 n * len(KEYWORD_MAPPER)
     '''
@@ -36,15 +41,23 @@ def top_n(n=300, cut_filed=True):
         Model = each['keyword_model']
         Seri = each['keyword_seri']
         ids = Model.objects.values('id').\
-            annotate(raw_data_count=Count('raw_data'))[:n]
+            annotate(raw_data_count=Count('raw_data'))
+        if n:
+            ids = ids[:n]
         _ids = (op(each) for each in ids)
         result = Model.objects.filter(~Q(word=''), id__in=_ids)
         if cut_filed:
             serilizer = Seri(result, many=True,
                              exclude_fields=('raw_data','trans', 'cn_word'))
+            seri_data.extend(serilizer.data)
         else:
-            serilizer = Seri(result, many=True,)
-        seri_data.extend(serilizer.data)
+            if subject_id:
+                serilizer = Seri(result, many=True,
+                        extra_options=dict(subject_id=subject_id))
+            else:
+                serilizer = Seri(result, many=True)
+            seri_data.extend(serilizer.data)
+            seri_data = filter_seri_data(seri_data)
     return sorted(seri_data, key=itemgetter('raw_data_count'), reverse=True)
 
 class SearchView(BaseView):
@@ -58,18 +71,30 @@ class SearchView(BaseView):
         params = self.get_param(request)
         word = params['word']
         subject = params['subject']
-        if not word:
-            return Response(top_n(20, cut_filed=False))
-        query_args = {'word__icontains': word,}
+        subject_id = None
         if subject and subject in SUBJECT_ID:
-            query_args['raw_data__subject_id'] = SUBJECT_ID[subject]
+            subject_id = SUBJECT_ID[subject]
+        if not word:
+            if subject_id:
+                return Response(top_n(n=60,subject_id=subject_id,
+                    cut_filed=False))
+            else:
+                return Response(top_n(20, cut_filed=False))
+        query_args = {'word__icontains': word,}
+        if subject_id:
+            query_args['raw_data__subject_id'] = subject_id
         # 语言检测
         language = detect_language(word)
         _Model = KEYWORD_MAPPER[language]['keyword_model']
         _Seri = KEYWORD_MAPPER[language]['keyword_seri']
         result = _Model.objects.filter(**query_args)
-        serilizer = _Seri(result, many=True)
-        return Response(serilizer.data)
+        if subject_id:
+            serilizer = _Seri(result, many=True,
+                    extra_options=dict(subject_id=subject_id))
+        else:
+            serilizer = _Seri(result, many=True)
+        data = filter_seri_data(serilizer.data)
+        return Response(data)
 
 class WordCloudView(BaseView):
 

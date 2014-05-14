@@ -13,43 +13,65 @@ class SiteRawDataSeri(DynamicFieldsModelSerializer):
     class Meta:
         model = SiteRawData
 
-class KeyWordENSeri(DynamicFieldsModelSerializer):
+class KeyWordSeriBase(DynamicFieldsModelSerializer):
 
     raw_data = SiteRawDataSeri()
     raw_data_count = serializers.IntegerField()
+
+    def transform_raw_data(self, obj, value):
+        attrs = ('id', 'title_cn', 'title_en', 'subject_id', 'subject', 'url')
+        result = []
+        for each in value:
+            result.append({attr: each[attr] for attr in attrs})
+        return result
+
+
+class KeyWordENSeri(KeyWordSeriBase):
 
     class Meta:
         model = KeyWordEN
 
-    def transform_raw_data(self, obj, value):
-        attrs = ('id', 'title_cn', 'title_en', 'subject_id', 'subject', 'url')
-        result = []
-        for each in value:
-            result.append({attr: each[attr] for attr in attrs})
-        return result
 
-class KeyWordCNSeri(DynamicFieldsModelSerializer):
-
-    raw_data = SiteRawDataSeri()
-    raw_data_count = serializers.IntegerField()
+class KeyWordCNSeri(KeyWordSeriBase):
 
     class Meta:
         model = KeyWordCN
 
-    def transform_raw_data(self, obj, value):
-        attrs = ('id', 'title_cn', 'title_en', 'subject_id', 'subject', 'url')
-        result = []
-        for each in value:
-            result.append({attr: each[attr] for attr in attrs})
-        return result
 
-class KeyWordENRelationSeri(KeyWordENSeri):
-    trans = KeyWordCNSeri()
-
-class KeyWordCNRelationSeri(KeyWordCNSeri):
-    trans = KeyWordENSeri()
+class KeyWordRelationMixin(object):
 
     def transform_trans(self, obj, value):
-        for each in value:
-            del each['cn_word']
+        options = self.extra_options
+        if options and 'subject_id' in options:
+            subject_id = options['subject_id']
+            for data in value:
+                data['raw_data'] = [raw for raw in data['raw_data'] \
+                        if raw['subject_id'] == subject_id]
+        return value
+
+
+class KeyWordENRelationSeri(KeyWordENSeri, KeyWordRelationMixin):
+
+    trans = KeyWordCNSeri()
+
+    def transform_raw_data(self, obj, value):
+        value = super(KeyWordENRelationSeri, self).transform_raw_data(obj, value)
+        options = self.extra_options
+        if options and 'subject_id' in options:
+            subject_id = options['subject_id']
+            return [raw for raw in value if raw['subject_id'] == subject_id]
+        return value
+
+
+
+class KeyWordCNRelationSeri(KeyWordCNSeri, KeyWordRelationMixin):
+
+    trans = KeyWordENSeri()
+
+    def transform_raw_data(self, obj, value):
+        value = super(KeyWordCNRelationSeri, self).transform_raw_data(obj, value)
+        options = self.extra_options
+        if options and 'subject_id' in options:
+            subject_id = options['subject_id']
+            return [raw for raw in value if raw['subject_id'] == subject_id]
         return value
