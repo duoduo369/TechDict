@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from django.db.models import Count, Q
 from rest_framework import status
 from rest_framework.response import Response
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 import model_settings as config
 from sites.models import KeyWordCN, KeyWordEN
 from sites.serializers import KeyWordCNRelationSeri, KeyWordENRelationSeri
@@ -64,13 +64,20 @@ class SearchView(BaseView):
 
     def get_param(self, request):
         data = request.GET
-        attrs = ('word', 'subject')
+        attrs = ('word', 'subject', 'maxResults')
         return {attr: data.get(attr, None) for attr in attrs}
+
+    def sorted_result(self, result):
+        '''将查询结果排序'''
+        result = sorted(result, key=attrgetter('raw_data_count'), reverse=True)
+        return result
 
     def get(self, request):
         params = self.get_param(request)
         word = params['word']
         subject = params['subject']
+        max_results = params['maxResults']
+        max_results = 50 if not max_results else max_results
         subject_id = None
         if subject and subject in SUBJECT_ID:
             subject_id = SUBJECT_ID[subject]
@@ -87,7 +94,8 @@ class SearchView(BaseView):
         language = detect_language(word)
         _Model = KEYWORD_MAPPER[language]['keyword_model']
         _Seri = KEYWORD_MAPPER[language]['keyword_seri']
-        result = _Model.objects.filter(**query_args)
+        result = _Model.objects.filter(**query_args)[:max_results]
+        result = self.sorted_result(result)
         if subject_id:
             serilizer = _Seri(result, many=True,
                     extra_options=dict(subject_id=subject_id))

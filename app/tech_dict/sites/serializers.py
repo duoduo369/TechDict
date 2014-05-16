@@ -50,6 +50,11 @@ class KeyWordRelationMixin(object):
         return value
 
 
+def soreted_raw_data(result):
+    '''返回排序中的'''
+    return result
+
+
 class KeyWordENRelationSeri(KeyWordENSeri, KeyWordRelationMixin):
 
     trans = KeyWordCNSeri()
@@ -59,9 +64,9 @@ class KeyWordENRelationSeri(KeyWordENSeri, KeyWordRelationMixin):
         options = self.extra_options
         if options and 'subject_id' in options:
             subject_id = options['subject_id']
-            return [raw for raw in value if raw['subject_id'] == subject_id]
+            value = [raw for raw in value if raw['subject_id'] == subject_id]
+        value = soreted_raw_data(value)
         return value
-
 
 
 class KeyWordCNRelationSeri(KeyWordCNSeri, KeyWordRelationMixin):
@@ -73,5 +78,6 @@ class KeyWordCNRelationSeri(KeyWordCNSeri, KeyWordRelationMixin):
         options = self.extra_options
         if options and 'subject_id' in options:
             subject_id = options['subject_id']
-            return [raw for raw in value if raw['subject_id'] == subject_id]
+            value = [raw for raw in value if raw['subject_id'] == subject_id]
+        value = soreted_raw_data(value)
         return value
