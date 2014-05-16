@@ -10,6 +10,26 @@ from utils.text import PATTERN_EN_SEMICOLON, split
 
 logger = getLogger('sites')
 
+KEYWORD_MODELS = (KeyWordCN, KeyWordEN)
+
+def _stat_keyword_relation(raw_data, keywords_cns, keywords_ens):
+    '''分析中英文词的对应关系'''
+    keywords = zip(keywords_cns, keywords_ens)
+    for word_cn, word_en in keywords:
+        pe_word_cn = KeyWordCN.objects.get_or_create(word=word_cn)[0]
+        pe_word_en = KeyWordEN.objects.get_or_create(word=word_en)[0]
+        pe_word_cn.raw_data.add(raw_data)
+        pe_word_en.raw_data.add(raw_data)
+        pe_word_en.cn_word.add(pe_word_cn)
+
+def _update_keyword_raw_data_count(raw_data, keywords_cns, keywords_ens):
+    '''更新关键词中的raw_data_count'''
+    for Model in KEYWORD_MODELS:
+        for keyword in Model.objects.all():
+            keyword.raw_data_count = keyword.raw_data.count()
+
+CLASSIFICATION_FUNS = (_stat_keyword_relation, _update_keyword_raw_data_count)
+
 @task
 def classification(start_date=None, end_date=None, stat_yesterday=False, stat_all=False):
     '''
@@ -55,10 +75,5 @@ def _classification(raw_data, keywords_cns, keywords_ens):
         logger.exception(u'中文英文关键字个数对应错误，查看此数据\nraw id:%s\nurl:%s',
                 raw_data.id, raw_data.url)
         return
-    keywords = zip(keywords_cns, keywords_ens)
-    for word_cn, word_en in keywords:
-        pe_word_cn = KeyWordCN.objects.get_or_create(word=word_cn)[0]
-        pe_word_en = KeyWordEN.objects.get_or_create(word=word_en)[0]
-        pe_word_cn.raw_data.add(raw_data)
-        pe_word_en.raw_data.add(raw_data)
-        pe_word_en.cn_word.add(pe_word_cn)
+    for func in CLASSIFICATION_FUNS:
+        func(raw_data, keywords_cns, keywords_ens)

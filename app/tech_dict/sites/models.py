@@ -192,9 +192,10 @@ class KeyWordCN(models.Model):
         verbose_name=u'原始抓取数据',
     )
 
-    @property
-    def raw_data_count(self):
-        return self.raw_data.count()
+    raw_data_count = models.IntegerField(
+        verbose_name=u'元数据条数',
+        default=0
+    )
 
     @property
     def trans(self):
@@ -219,9 +220,10 @@ class KeyWordEN(models.Model):
         verbose_name=u'中文关键字',
     )
 
-    @property
-    def raw_data_count(self):
-        return self.raw_data.count()
+    raw_data_count = models.IntegerField(
+        verbose_name=u'元数据条数',
+        default=0
+    )
 
     @property
     def trans(self):
