@@ -26,6 +26,8 @@ KEYWORD_MAPPER = {
     }
 }
 
+MAX_RESULT = 50
+
 def filter_seri_data(data):
     '''过滤不该出现的数据'''
     return [each for each in data if each['raw_data']]
@@ -33,7 +35,10 @@ def filter_seri_data(data):
 
 def top_n(n=None, subject_id=None, cut_filed=True):
     '''
-        返回 n * len(KEYWORD_MAPPER)
+        返回关键词表中最热的n条记录，n * len(KEYWORD_MAPPER)条
+
+        subject_id -- 科目代码，过滤
+        cut_filed -- seri中是否cut字段，词云中使用True
     '''
     op = itemgetter('id')
     seri_data = []
@@ -63,13 +68,18 @@ def top_n(n=None, subject_id=None, cut_filed=True):
 class SearchView(BaseView):
 
     def get_param(self, request):
+        '''
+            word -- 查询关键词
+            subject -- 分类
+            maxResults -- 返回结果最多条数
+        '''
         data = request.GET
         attrs = ('word', 'subject', 'maxResults')
         return {attr: data.get(attr, None) for attr in attrs}
 
     def sorted_result(self, result):
         '''将查询结果排序'''
-        result = sorted(result, key=attrgetter('raw_data_count'), reverse=True)
+        result = sorted(result, key=attrgetter('raw_data_count', 'word'), reverse=True)
         return result
 
     def get(self, request):
@@ -77,7 +87,7 @@ class SearchView(BaseView):
         word = params['word']
         subject = params['subject']
         max_results = params['maxResults']
-        max_results = 50 if not max_results else max_results
+        max_results = MAX_RESULT if not max_results else max_results
         subject_id = None
         if subject and subject in SUBJECT_ID:
             subject_id = SUBJECT_ID[subject]

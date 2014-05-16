@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 from rest_framework import serializers, fields
 from tech_dict.serializers import DynamicFieldsModelSerializer
+from operator import itemgetter
 
 from sites.models import SiteRawData, KeyWordCN, KeyWordEN
 
@@ -52,6 +53,7 @@ class KeyWordRelationMixin(object):
 
 def soreted_raw_data(result):
     '''返回排序中的'''
+    result = sorted(result, key=itemgetter('title_cn'), reverse=True)
     return result
 
 
