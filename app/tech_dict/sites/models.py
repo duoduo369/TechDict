@@ -184,7 +184,7 @@ class KeyWordCN(models.Model):
     '''中文关键字'''
     word = models.CharField(
         verbose_name=u'中文关键词',
-        max_length=MAX_LENGTH_100,
+        max_length=MAX_LENGTH_200,
         unique=True,
     )
     raw_data = models.ManyToManyField(
@@ -207,7 +207,7 @@ class KeyWordEN(models.Model):
     '''英文关键字'''
     word = models.CharField(
         verbose_name=u'英文关键词',
-        max_length=MAX_LENGTH_100,
+        max_length=MAX_LENGTH_200,
         unique=True,
     )
     raw_data = models.ManyToManyField(
