@@ -40,6 +40,7 @@ def update_keyword_raw_data_count():
         total = Model.objects.count()
         for keyword in Model.objects.all():
             keyword.raw_data_count = keyword.raw_data.count()
+            keyword.save()
             index += 1
             print 'Model:', Model, 'total:', total, ' now:', index
 
