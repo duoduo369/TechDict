@@ -13,7 +13,10 @@ logger = getLogger('sites')
 KEYWORD_MODELS = (KeyWordCN, KeyWordEN)
 
 def _stat_keyword_relation(raw_data, keywords_cns, keywords_ens):
-    '''分析中英文词的对应关系'''
+    '''
+        分析中英文词的对应关系
+        数据比较大的时候cpu飙升，速达慢
+    '''
     assert isinstance(raw_data, SiteRawData)
     if len(keywords_ens) != len(keywords_cns):
         logger.exception(u'中文英文关键字个数对应错误，查看此数据\nraw id:%s\nurl:%s',
@@ -27,11 +30,18 @@ def _stat_keyword_relation(raw_data, keywords_cns, keywords_ens):
         pe_word_en.raw_data.add(raw_data)
         pe_word_en.cn_word.add(pe_word_cn)
 
+@task
 def update_keyword_raw_data_count():
-    '''更新关键词中的raw_data_count'''
+    '''
+        更新关键词中的raw_data_count
+    '''
     for Model in KEYWORD_MODELS:
+        index = 0
+        total = Model.objects.count()
         for keyword in Model.objects.all():
             keyword.raw_data_count = keyword.raw_data.count()
+            index += 1
+            print 'Model:', Model, 'total:', total, ' now:', index
 
 @task
 def classification(start_date=None, end_date=None, stat_yesterday=False, stat_all=False):
@@ -65,11 +75,13 @@ def classification(start_date=None, end_date=None, stat_yesterday=False, stat_al
         raw_data = SiteRawData.objects.filter(
             pub_date__gte=count_date_start,
             pub_date__lte=count_date_end,
-        )
+        ).order_by('pub_date')
+    index = 0
+    total = len(raw_data)
     for raw in raw_data:
+        print raw.pub_date, raw.url
         keywords_cns = split(raw.keywords_cn, PATTERN_EN_SEMICOLON)
         keywords_ens = split(raw.keywords_en, PATTERN_EN_SEMICOLON)
         _stat_keyword_relation(raw, keywords_cns, keywords_ens)
-
-    # 最后更新keyword_raw_data
-    update_keyword_raw_data_count()
+        index+=1
+        print 'total:', total, ' now:', index
