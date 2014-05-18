@@ -3,6 +3,8 @@ import re
 
 PATTERN_CN_SEMICOLON = re.compile(u'；')
 PATTERN_EN_SEMICOLON = re.compile(u';')
+PATTERN_CN_COMMA = re.compile(u'，')
+PATTERN_EN_COMMA = re.compile(u',')
 
 def split(raw_str, pattern):
     '''
