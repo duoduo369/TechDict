@@ -32,3 +32,8 @@ SUBJECT_ID = {sub:i for i,sub in enumerate(SUBJECTS)}
 # 论文分类反查
 # id:学科
 ID_SUBJECT = {i:sub for i,sub in enumerate(SUBJECTS)}
+
+# 关键词类型
+KEY_WORD_TYPE  = ('keyword', 'author')
+KEY_WORD_TYPE_ID = {t:i for i,t in enumerate(KEY_WORD_TYPE)}
+ID_KEY_WORD_TYPE = {i:t for i,t in enumerate(KEY_WORD_TYPE)}

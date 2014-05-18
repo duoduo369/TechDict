@@ -197,6 +197,16 @@ class KeyWordCN(models.Model):
         default=0
     )
 
+    keyword_type = models.IntegerField(
+        verbose_name=u'关键字类型',
+        default=0
+    )
+
+    weight = models.IntegerField(
+        verbose_name=u'权重',
+        default=0
+    )
+
     @property
     def trans(self):
         return self.keyworden_set.all()
@@ -222,6 +232,16 @@ class KeyWordEN(models.Model):
 
     raw_data_count = models.IntegerField(
         verbose_name=u'元数据条数',
+        default=0
+    )
+
+    keyword_type = models.IntegerField(
+        verbose_name=u'关键字类型',
+        default=0
+    )
+
+    weight = models.IntegerField(
+        verbose_name=u'权重',
         default=0
     )
 
