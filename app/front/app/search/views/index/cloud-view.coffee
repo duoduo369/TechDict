@@ -28,7 +28,7 @@ module.exports = class CloudView extends View
 
     d3.layout.cloud().size([@svg_w * 1.8, @svg_h * 1.8])
       .words(words
-      .map (d) -> return {text: d['word'], size: 16 + 4 * d['word_count']})
+      .map (d) -> return {text: d['word'], size: 16 + 2 * d['word_count']})
       .padding(5)
       .rotate((d, i)-> return (i % 2 ) * 90)
       .font("Impact")
