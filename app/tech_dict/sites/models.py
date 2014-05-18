@@ -33,6 +33,16 @@ class SiteRawData(models.Model):
             created_at 记录创建日期
             updated_at 记录更新日期
             raw_html
+
+        权重是通过文章中的关键字和作者对应的文章书计算
+            例如 文章有 A|B|C三个关键词 a|b|c三个作者
+            每个关键词或者作者对应的其他文章数为raw_data_count?
+            k1,k2为系数
+            weight =
+                k1 * (raw_data_count?*A + raw_data_count?*B +
+                      raw_data_count?*C) +
+                k2 * (raw_data_count?*a + raw_data_count?*b +
+                      raw_data_count?*c) +
     '''
     ATTRS = ['site_id', 'subject_id',
              'title_cn', 'title_en', 'authors_cn', 'authors_en',
@@ -174,11 +184,18 @@ class SiteRawData(models.Model):
         blank=True,
         null=True,
     )
+
+    weight = models.IntegerField(
+        verbose_name=u'权重',
+        default=0
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.url
+
 
 class KeyWordCN(models.Model):
     '''中文关键字'''
