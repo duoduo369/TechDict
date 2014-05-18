@@ -21,10 +21,10 @@ def get_keywords(raw_data, keyword_type='keyword'):
     elif keyword_type == 'author':
         keywords_cns = split(raw_data.authors_cn, PATTERN_EN_COMMA)
         keywords_ens = split(raw_data.authors_en, PATTERN_EN_COMMA)
+    result = dict(
         keyword_type=KEY_WORD_TYPE_ID[keyword_type],
         keywords_cns=keywords_cns,
         keywords_ens=keywords_ens,
-    result = dict(
     )
     return result
 
