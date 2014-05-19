@@ -33,7 +33,7 @@ def filter_seri_data(data):
     return [each for each in data if each['raw_data']]
 
 
-def top_n(n=None, subject_id=None, cut_filed=True):
+def top_n(n=10, subject_id=None, cut_filed=True):
     '''
         返回关键词表中最热的n条记录，n * len(KEYWORD_MAPPER)条
 
@@ -46,9 +46,8 @@ def top_n(n=None, subject_id=None, cut_filed=True):
         Model = each['keyword_model']
         Seri = each['keyword_seri']
         ids = Model.objects.values('id').\
-            annotate(raw_data_count=Count('raw_data'))
-        if n:
-            ids = ids[:n]
+            annotate(raw_data_count=Count('raw_data')).\
+            order_by('-raw_data_count')[:n]
         _ids = (op(each) for each in ids)
         result = Model.objects.filter(~Q(word=''), id__in=_ids)
         if cut_filed:
@@ -79,6 +78,7 @@ class SearchView(BaseView):
 
     def sorted_result(self, result):
         '''将查询结果排序'''
+        # 将结果按照元数据条数排序
         result = sorted(result, key=attrgetter('raw_data_count', 'word'), reverse=True)
         return result
 
