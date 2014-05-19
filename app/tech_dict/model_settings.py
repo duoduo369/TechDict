@@ -37,3 +37,13 @@ ID_SUBJECT = {i:sub for i,sub in enumerate(SUBJECTS)}
 KEY_WORD_TYPE  = ('keyword', 'author')
 KEY_WORD_TYPE_ID = {t:i for i,t in enumerate(KEY_WORD_TYPE)}
 ID_KEY_WORD_TYPE = {i:t for i,t in enumerate(KEY_WORD_TYPE)}
+
+# raw_data 系数
+KEY_WORD_TYPE_COEFFICIENT = {}
+for key,val in KEY_WORD_TYPE_ID.iteritems():
+    KEY_WORD_TYPE_COEFFICIENT[key] = {
+        'id': val,
+        'coefficient': 1,
+    }
+KEY_WORD_TYPE_COEFFICIENT['keyword']['coefficient'] = 1
+KEY_WORD_TYPE_COEFFICIENT['author']['coefficient'] = 1

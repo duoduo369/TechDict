@@ -7,7 +7,7 @@ from celery.task import task
 from sites.models import KeyWordCN, KeyWordEN, SiteRawData
 from utils.dateutil import parse_dates, today, yesterday
 from utils.text import PATTERN_EN_SEMICOLON, PATTERN_EN_COMMA, split
-from model_settings import KEY_WORD_TYPE, KEY_WORD_TYPE_ID
+from model_settings import KEY_WORD_TYPE, KEY_WORD_TYPE_ID, KEY_WORD_TYPE_COEFFICIENT
 logger = getLogger('sites')
 
 KEYWORD_MODELS = (KeyWordCN, KeyWordEN)
@@ -124,5 +124,35 @@ def classification(
     for raw in raw_data:
         print raw.pub_date, raw.url
         _stat_keyword_relation(raw, keyword_type)
+        index+=1
+        print 'total:', total, ' now:', index
+
+@task
+def update_raw_data_weight(
+        start_date=None, end_date=None, stat_yesterday=False, stat_all=False):
+    raw_data = get_raw_data(start_date, end_date, stat_yesterday, stat_all)
+    index = 0
+    total = len(raw_data)
+
+    for raw in raw_data:
+        print raw.pub_date, raw.url
+        # keywords_cns count = keywords_ens count
+        weight = 0
+        for each in KEY_WORD_TYPE_COEFFICIENT.itervalues():
+            # 得到不同类型的关键词
+            data_set = (
+                 raw.keywordcn_set.filter(keyword_type=each['id']),
+                 raw.keyworden_set.filter(keyword_type=each['id'])
+            )
+            # 此类型关键词的系数
+            k = each['coefficient']
+            # 每一个词用系数乘以raw_data_count
+            for each in data_set:
+                for _keyword in each:
+                    weight += k * _keyword.raw_data_count
+
+        if raw.weight != weight:
+            raw.weight = weight
+            raw.save()
         index+=1
         print 'total:', total, ' now:', index
