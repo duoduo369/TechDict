@@ -28,9 +28,38 @@ KEYWORD_MAPPER = {
 
 MAX_RESULT = 50
 
-def filter_seri_data(data):
+def filter_seri_data(data, subject_id=None,
+      raw_data_num=7, trans_num=7, trans_raw_data_num=7):
     '''过滤不该出现的数据'''
+    # 先截断
+    for each in data:
+        each['trans'] = each['trans'][:trans_num]
+        each['raw_data'] = each['raw_data'][:raw_data_num]
+        for trans in each['trans']:
+            trans['raw_data'] = trans['raw_data'][:trans_raw_data_num]
+    # 后过滤
+    if subject_id:
+        for each in data:
+            for trans in each['trans']:
+                trans['raw_data'] = [raw for raw in trans['raw_data'] \
+                 if raw['subject_id'] == subject_id][:trans_raw_data_num]
+
     return [each for each in data if each['raw_data']]
+
+#def filter_data(data, subject_id=None,
+      #raw_data_num=7, trans_num=7, trans_raw_data_num=7):
+    #'''过滤不该出现的数据'''
+    #if subject_id:
+        #pass
+    ## 过滤
+    #for each in data:
+        #each.trans = each.trans[:trans_num]
+        #each.raw_data = each.raw_data[:raw_data_num]
+        #for trans in each.trans:
+            #trans.raw_data = [raw for raw in trans.raw_data \
+             #if raw.subject_id == subject_id][:trans_raw_data_num]
+    #data = [each for each in data if each.raw_data]
+    #return data
 
 
 def top_n(n=10, subject_id=None, cut_filed=True):
@@ -55,13 +84,14 @@ def top_n(n=10, subject_id=None, cut_filed=True):
                              exclude_fields=('raw_data','trans', 'cn_word'))
             seri_data.extend(serilizer.data)
         else:
-            if subject_id:
-                serilizer = Seri(result, many=True,
-                        extra_options=dict(subject_id=subject_id))
-            else:
-                serilizer = Seri(result, many=True)
+            #if subject_id:
+                #serilizer = Seri(result, many=True,
+                        #extra_options=dict(subject_id=subject_id))
+            #else:
+                #serilizer = Seri(result, many=True)
+            serilizer = Seri(result, many=True)
             seri_data.extend(serilizer.data)
-            seri_data = filter_seri_data(seri_data)
+            seri_data = filter_seri_data(seri_data, subject_id=subject_id)
     return sorted(seri_data, key=itemgetter('raw_data_count'), reverse=True)
 
 class SearchView(BaseView):
