@@ -46,21 +46,11 @@ def filter_seri_data(data, subject_id=None,
 
     return [each for each in data if each['raw_data']]
 
-#def filter_data(data, subject_id=None,
-      #raw_data_num=7, trans_num=7, trans_raw_data_num=7):
-    #'''过滤不该出现的数据'''
-    #if subject_id:
-        #pass
-    ## 过滤
-    #for each in data:
-        #each.trans = each.trans[:trans_num]
-        #each.raw_data = each.raw_data[:raw_data_num]
-        #for trans in each.trans:
-            #trans.raw_data = [raw for raw in trans.raw_data \
-             #if raw.subject_id == subject_id][:trans_raw_data_num]
-    #data = [each for each in data if each.raw_data]
-    #return data
-
+def sorted_raw_data(data):
+    '''
+        排序seri中的raw_data列表
+    '''
+    return sorted(data, key=itemgetter('weight'), reverse=True)
 
 def top_n(n=10, subject_id=None, cut_filed=True):
     '''
@@ -84,11 +74,6 @@ def top_n(n=10, subject_id=None, cut_filed=True):
                              exclude_fields=('raw_data','trans', 'cn_word'))
             seri_data.extend(serilizer.data)
         else:
-            #if subject_id:
-                #serilizer = Seri(result, many=True,
-                        #extra_options=dict(subject_id=subject_id))
-            #else:
-                #serilizer = Seri(result, many=True)
             serilizer = Seri(result, many=True)
             seri_data.extend(serilizer.data)
             seri_data = filter_seri_data(seri_data, subject_id=subject_id)
@@ -110,6 +95,20 @@ class SearchView(BaseView):
         '''将查询结果排序'''
         # 将结果按照元数据条数排序
         result = sorted(result, key=attrgetter('raw_data_count', 'word'), reverse=True)
+        return result
+
+    def sorted_seri_data(self, result):
+        '''
+            排序原始数据
+            因为django query many to many不能set
+            需要在seri中排序外键的原始数据
+            model中使用trans排序
+        '''
+        for each in result:
+            each['raw_data'] = sorted_raw_data(each['raw_data'])
+            for trans in each['trans']:
+                trans['raw_data'] = sorted_raw_data(trans['raw_data'])
+
         return result
 
     def get(self, request):
@@ -142,6 +141,7 @@ class SearchView(BaseView):
         else:
             serilizer = _Seri(result, many=True)
         data = filter_seri_data(serilizer.data)
+        data = self.sorted_seri_data(data)
         return Response(data)
 
 class WordCloudView(BaseView):
