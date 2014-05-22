@@ -89,7 +89,11 @@ class SearchView(BaseView):
         '''
         data = request.GET
         attrs = ('word', 'subject', 'maxResults')
-        return {attr: data.get(attr, None) for attr in attrs}
+        param = {attr: data.get(attr, None) for attr in attrs}
+        # fix 前端空格会变成+的bug
+        if param['word'] and '+' in param['word']:
+            param['word'] = param['word'].replace('+', ' ')
+        return param
 
     def sorted_result(self, result):
         '''将查询结果排序'''
