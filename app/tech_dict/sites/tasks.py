@@ -4,8 +4,9 @@ from logging import getLogger
 
 from celery.task import task
 
-from sites.models import KeyWordCN, KeyWordEN, SiteRawData
-from utils.dateutil import parse_dates, today, yesterday
+from sites.models import KeyWordCN, KeyWordEN, SiteRawData, StatRawData
+from datetime import datetime
+from utils.dateutil import parse_dates, today, yesterday, next_year, date_to_string
 from utils.text import PATTERN_EN_SEMICOLON, PATTERN_EN_COMMA, split
 from model_settings import KEY_WORD_TYPE, KEY_WORD_TYPE_ID, KEY_WORD_TYPE_COEFFICIENT
 logger = getLogger('sites')
@@ -156,3 +157,36 @@ def update_raw_data_weight(
             raw.save()
         index+=1
         print 'total:', total, ' now:', index
+
+@task
+def update_stat_raw_data(start_year, end_year=None):
+    assert isinstance(start_year, int)
+    assert not end_year or isinstance(end_year, int)
+    if not end_year:
+        end_year = start_year
+    assert start_year <= end_year
+    key_word_type_id = KEY_WORD_TYPE_ID.values()
+    for year in xrange(start_year, end_year+1):
+        _year, _next_year = datetime(year, 1, 1), next_year(year)
+        _year, _next_year = map(date_to_string,(_year, _next_year))
+        stat_raw_data = StatRawData.objects.get_or_create(year=year)[0]
+        raw_data = get_raw_data(_year, _next_year)
+        # 这一年的抓取量
+        scrapy_num = raw_data.count()
+        stat_raw_data.scrapy_num = scrapy_num
+        # 这一年的分析量
+        stat_num = 0
+        index = 1
+        total = scrapy_num
+        for raw in raw_data:
+            # 任何一个分类下有0的数据，则此条结果分析有误
+            # 类型为关键字和作者，肯定有对应词
+            for _id in key_word_type_id:
+                if not raw.keywordcn_set.filter(keyword_type=_id).count():
+                    break
+            else:
+                stat_num += 1
+            index+=1
+            print 'year:', year, 'end_year', end_year,'total:', total, ' now:', index
+        stat_raw_data.stat_num = stat_num
+        stat_raw_data.save()

@@ -22,7 +22,8 @@ LOG_DIR = os.path.join(BASE_DIR, 'log')
 SECRET_KEY = 'x@18g06lly@wn@vla#bh&ms)^-jbtmo3lk8z2g55o7r#@t&lyb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -103,7 +104,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_ROOT = './'
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "admin"),
+    os.path.join(BASE_DIR, "rest_framework"),
+)
+print STATICFILES_DIRS
 #------------------------- rest ---------------------
 
 REST_FRAMEWORK = {

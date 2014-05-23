@@ -21,3 +21,14 @@ def yesterday():
         return yesterday -- type/date
     '''
     return today() - timedelta(days=1)
+
+
+def date_to_string(date, format='%Y-%m-%d'):
+    return date.strftime(format)
+
+
+def next_year(year):
+    '''
+        year -- int
+    '''
+    return datetime(year+1, 1, 1) + timedelta(1)

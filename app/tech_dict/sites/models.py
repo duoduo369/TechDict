@@ -268,3 +268,37 @@ class KeyWordEN(models.Model):
 
     def __unicode__(self):
         return self.word
+
+class StatRawData(models.Model):
+    '''
+        分析数据
+
+        按年分析
+            网站元数据总数 total_num
+            抓回数据总数 scrapy_num
+            分析数据数 stat_num
+        计算
+            抓取率 = scrapy_num / total_num
+            分析率 = stat_num / scrapy_num
+
+        total_num 只能查原网站数据，或者写虫
+        scrapy_num 查raw_data表 count
+        stat_num 查raw_data many-to-many的关键字
+            关键字中不为0的则为分析成功
+    '''
+    year = models.IntegerField(
+        verbose_name=u'分析年份',
+        unique=True,
+    )
+    total_num = models.IntegerField(
+        verbose_name=u'网站元数据总数',
+        default=0
+    )
+    scrapy_num = models.IntegerField(
+        verbose_name=u'抓回数据总数',
+        default=0
+    )
+    stat_num = models.IntegerField(
+        verbose_name=u'分析数据数',
+        default=0
+    )
