@@ -302,3 +302,9 @@ class StatRawData(models.Model):
         verbose_name=u'分析数据数',
         default=0
     )
+
+    class Meta:
+        ordering = ['year']
+
+    def __unicode__(self):
+        return unicode(self.year)

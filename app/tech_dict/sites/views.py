@@ -6,8 +6,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from operator import itemgetter, attrgetter
 import model_settings as config
-from sites.models import KeyWordCN, KeyWordEN
-from sites.serializers import KeyWordCNRelationSeri, KeyWordENRelationSeri
+from sites.models import KeyWordCN, KeyWordEN, StatRawData
+from sites.serializers import KeyWordCNRelationSeri, KeyWordENRelationSeri, StatRawDataSeri
 from tech_dict.custom_exceptions import ArgumentError, MISSING_FIELD
 from tech_dict.views import BaseView
 from utils.language import detect_language
@@ -152,3 +152,10 @@ class WordCloudView(BaseView):
 
     def get(get, request):
         return Response(top_n(150))
+
+class StatView(BaseView):
+
+    def get(get, request):
+        data = StatRawData.objects.all()
+        serilizer = StatRawDataSeri(data, many=True)
+        return Response(serilizer.data)

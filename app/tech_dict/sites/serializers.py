@@ -4,7 +4,7 @@ from rest_framework import serializers, fields
 from tech_dict.serializers import DynamicFieldsModelSerializer
 from operator import itemgetter
 
-from sites.models import SiteRawData, KeyWordCN, KeyWordEN
+from sites.models import SiteRawData, KeyWordCN, KeyWordEN, StatRawData
 
 
 class SiteRawDataSeri(DynamicFieldsModelSerializer):
@@ -48,3 +48,8 @@ class KeyWordENRelationSeri(KeyWordENSeri):
 class KeyWordCNRelationSeri(KeyWordCNSeri):
 
     trans = KeyWordENSeri()
+
+class StatRawDataSeri(DynamicFieldsModelSerializer):
+
+    class Meta:
+        model = StatRawData
