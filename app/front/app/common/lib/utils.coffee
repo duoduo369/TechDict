@@ -15,3 +15,6 @@ module.exports =
       params[key] = decodeURIComponent(val)
 
     params
+
+  sum: (data)->
+    _.reduce(data, ((a, b)-> a + b), 0)

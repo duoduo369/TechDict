@@ -4,8 +4,10 @@ HomeView = require 'search/views/home/home-view'
 IndexView = require 'search/views/index/index-view'
 SearchView = require 'search/views/index/search-view'
 CloudView = require 'search/views/index/cloud-view'
+StatView = require 'search/views/index/stat-view'
 Model = require 'common/models/base/model'
 WordCloudCollection = require 'search/models/word-cloud-collection'
+StatCollection = require 'search/models/stat-collection'
 
 module.exports = class HomeController extends Controller
 
@@ -23,3 +25,8 @@ module.exports = class HomeController extends Controller
     @cloud_view = new CloudView
       region: 'search-display'
       collection: new WordCloudCollection
+
+  stat: =>
+    @stat_view = new StatView
+      region: 'container'
+      collection: new StatCollection

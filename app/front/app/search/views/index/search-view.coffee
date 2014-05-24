@@ -7,5 +7,9 @@ module.exports = class SearchView extends View
   container: '.search'
   noWrap: true
   template: require './templates/search'
+  events:
+    'submit': 'search'
   initialize: ->
     super
+
+  search: ->
