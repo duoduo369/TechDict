@@ -20,8 +20,8 @@ class KeyWordSeriBase(DynamicFieldsModelSerializer):
     raw_data_count = serializers.IntegerField()
 
     def transform_raw_data(self, obj, value):
-        attrs = ('id', 'title_cn', 'title_en', 'subject_id',
-                 'subject', 'url', 'weight')
+        attrs = ('id', 'title_cn', 'subject', 'url', 'weight',
+                 'paper_edu_pub_record')
         result = []
         for each in value:
             result.append({attr: each[attr] for attr in attrs})

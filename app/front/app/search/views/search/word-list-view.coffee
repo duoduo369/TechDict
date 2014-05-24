@@ -15,6 +15,8 @@ module.exports = class WordListView extends CollectionView
     'click .search-word-item': 'click_item'
     'click .search-word-item .rb-close': 'click_item_close'
     'click .subject-list li a': 'click_button'
+    'click .trans-word': 'click_trans_word'
+    'click .word': 'click_word'
 
   hover_in_item: (e)->
     $cur = $(e.currentTarget or e)
@@ -56,18 +58,34 @@ module.exports = class WordListView extends CollectionView
     $close = $('.rb-close', $cur)
     $overlay.css('opacity', 1).css('zIndex', 9999).css('pointer-events','auto')
 
-  click_item_close: (e)->
+  click_item_close: (e) ->
     $cur = $(e.currentTarget or e)
     $overlay = $cur.parent()
     $overlay.css('opacity', 0)
       .css('zIndex', -1)
       .css('pointer-events', 'none')
+    @$('.list').removeClass('zoom')
+    @$('.trans-word').removeClass('display-hide').removeClass('full-height')
+    @$('.trans-word ul').addClass('display-hide')
     e.stopPropagation()
 
-  click_button: (e)->
+  click_button: (e) ->
     $cur = $(e.currentTarget or e)
-    #@collection.remove()
-    #@dispose()
+
+  click_word: (e) =>
+    if @$('.list').hasClass('zoom')
+      @$('.list').removeClass('zoom')
+      @$('.trans-word').removeClass('display-hide').removeClass('full-height')
+      @$('.trans-word ul').addClass('display-hide')
+
+
+  click_trans_word: (e) =>
+    @$('.list').addClass('zoom')
+    $cur = $(e.currentTarget or e)
+    $cur.addClass('full-height')
+    $('ul', $cur).removeClass('display-hide')
+    @$('.trans-word').addClass('display-hide')
+    $cur.removeClass('display-hide')
 
   initialize: =>
     super
@@ -124,7 +142,7 @@ module.exports = class WordListView extends CollectionView
       dom_string = '<div></div>'
       if obj
         raw_data = obj['raw_data']
-        dom_string = '<div><span>'+obj['word']+'</span><ul>'
+        dom_string = '<div><span>'+obj['word']+'</span><ul class="text-left display-hide">'
         raw_data_length = raw_data.length
         if raw_data_length < 4
           for j in [raw_data_length...4]
@@ -133,7 +151,7 @@ module.exports = class WordListView extends CollectionView
           raw = raw_data[j-1]
           if raw
             dom_string += '<li><a href="'+raw['url']+'" target=_blank>'
-            dom_string += raw['title_cn']+'</a></li>'
+            dom_string += raw['paper_edu_pub_record']+'</a></li>'
         dom_string += '</ul></div>'
 
       $(dom_string)

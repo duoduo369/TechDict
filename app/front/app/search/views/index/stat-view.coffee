@@ -27,9 +27,6 @@ module.exports = class StatView extends View
       '#stat_num': stat_num
     for sel_id, num of sel_dict
       @$(sel_id+' .data').html(num)
-    console.log total_num
-    console.log scrapy_num
-    console.log stat_num
     options =
       scaleFontSize: 20
     data =
@@ -58,4 +55,3 @@ module.exports = class StatView extends View
         },
       ]
     line_char = new Chart(ctx).Line(data, options)
-    console.log @collection
