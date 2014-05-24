@@ -1,5 +1,4 @@
 View = require 'common/views/base/view'
-subscribe = Chaplin.mediator.subscribe
 
 module.exports = class IndexView extends View
   autoRender: true
@@ -12,7 +11,3 @@ module.exports = class IndexView extends View
 
   initialize: ->
     super
-    subscribe 'search', @search
-
-  search: (args) ->
-    console.log args

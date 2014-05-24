@@ -78,13 +78,18 @@ module.exports = class WordListView extends CollectionView
         @loading_done()
 
   init_subject_list: (items) =>
+    if not items or not items.length
+      $subject_list = @$('.subject-list').html(
+        '<span class="no-result">没有找到相应结果，试试看别的关键词吧亲～</span>')
+
+      return
     root = utils.get_root_url()
     params = utils.get_url_params()
     raw_data = _.pluck(items, 'raw_data')
     subjects = _.map(raw_data, (data) -> return _.pluck(data, 'subject'))
     subjects = _.flatten(_.map(raw_data, (data) -> return _.pluck(data, 'subject')))
     subjects = _.uniq(subjects)
-    $subject_list = $('.subject-list', @$el)
+    $subject_list = @$('.subject-list')
     _.each(subjects, (sub) ->
       str = '<li><a class="button-xsmall pure-button" '
       str +='href="/!/search?word='+params['word']+'&subject='+sub+'">'
