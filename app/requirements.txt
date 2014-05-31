@@ -32,7 +32,6 @@ polished==0.0.9
 pyOpenSSL==0.14
 pycallgraph==1.0.1
 pycparser==2.10
-pyenchant==1.6.5
 pylint==1.2.0
 pylint-django==0.3
 pylint-plugin-utils==0.1.1
