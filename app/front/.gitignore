@@ -26,7 +26,8 @@ node_modules/
 tmp/
 
 # Brunch output folder.
-public/
+# online to publish
+# public/
 
 # Bower stuff.
 # Bower 对我们网速慢的人来说完全是煎熬
