@@ -25,6 +25,7 @@ isort==3.8.0
 kombu==3.0.15
 logilab-common==0.61.0
 lxml==3.3.5
+meld3==1.0.0
 natsort==3.2.0
 pies==2.6.1
 pies2overrides==2.6.1
@@ -40,7 +41,9 @@ pytz==2014.2
 queuelib==1.1.1
 selenium==2.41.0
 six==1.6.1
+supervisor==3.0
 uWSGI==2.0.4
 w3lib==1.5
 wsgiref==0.1.2
+xlwt==0.7.5
 zope.interface==4.1.1
