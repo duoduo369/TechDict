@@ -1,1 +1,15 @@
 
+2014-05-31 23:59:22,012 INFO RPC interface 'supervisor' initialized
+2014-05-31 23:59:22,012 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2014-05-31 23:59:22,013 INFO daemonizing the supervisord process
+2014-05-31 23:59:22,014 INFO supervisord started with pid 20848
+2014-05-31 23:59:23,018 INFO spawned: 'supervisor_django' with pid 20850
+2014-05-31 23:59:23,191 INFO exited: supervisor_django (exit status 1; not expected)
+2014-05-31 23:59:24,195 INFO spawned: 'supervisor_django' with pid 20858
+2014-05-31 23:59:24,381 INFO exited: supervisor_django (exit status 1; not expected)
+2014-05-31 23:59:26,384 INFO spawned: 'supervisor_django' with pid 20866
+2014-05-31 23:59:26,608 INFO exited: supervisor_django (exit status 1; not expected)
+2014-05-31 23:59:29,615 INFO spawned: 'supervisor_django' with pid 20870
+2014-05-31 23:59:29,790 INFO exited: supervisor_django (exit status 1; not expected)
+2014-05-31 23:59:30,358 INFO gave up: supervisor_django entered FATAL state, too many start retries too quickly
+2014-06-01 00:00:57,580 WARN received SIGTERM indicating exit request
