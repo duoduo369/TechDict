@@ -176,7 +176,7 @@ class PaperEduSpider(CrawlSpider):
 
         # keywords页面不规范
         for attr, xpath_correction in self._XPATH_CORRECTION.iteritems():
-            if not ''.join(item[attr]).strip(' ;\n'):
+            if not ''.join(item.get(attr, '')).strip(' ;\n'):
                 item[attr] = sel.xpath(xpath_correction).extract()[0]
 
         try:
