@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     'django', # server_name www.api.tect_dict.com;
               # location / 下的
               # nginx proxy_pass http://django;
+    '115.28.11.182', # 61 hosts
 ]
 #ALLOWED_HOSTS = '*'
 
