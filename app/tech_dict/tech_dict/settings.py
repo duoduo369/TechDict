@@ -109,7 +109,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "admin"),
     os.path.join(BASE_DIR, "rest_framework"),
 )
-print STATICFILES_DIRS
 #------------------------- rest ---------------------
 
 REST_FRAMEWORK = {

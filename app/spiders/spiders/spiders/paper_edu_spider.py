@@ -112,6 +112,7 @@ class PaperEduSpider(CrawlSpider):
                 refetch -- 是否重抓已存在的数据
         '''
         super(PaperEduSpider, self).__init__()
+        print 'init spider'
         url = (
           URL_PREFIX +
           '?type={_type}&begin={begin}&end={end}&method=RELEVANCE&'
@@ -133,10 +134,12 @@ class PaperEduSpider(CrawlSpider):
         '''
             处理start url第一页
         '''
+        print 'start_url:', response.url
         #url = response.url
         #log.info('start url: {url}'.format(url=url))
 
     def parse_content(self, response):
+        print 'scrapy:', response.url
         django_istance = self._Model.objects.filter(url=response.url)
         # django obj之前存在,并且不重抓则忽略此条
         if django_istance and not self.refetch:
@@ -208,6 +211,7 @@ class PaperEduSpider(CrawlSpider):
 
     def redirect_request(self, response):
         '''网站改版，旧网页变成重定向'''
+        print 'redirect:', response.url
         _url = 'http://www.paper.edu.cn{url}'
         try:
             url = _url.format(url=REDIRECT_PATTERN.search(response.body).group())
